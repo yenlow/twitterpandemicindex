@@ -1,0 +1,10 @@
+src/api/config.py
+__pycache__
+data/*.pkl
+data/*.csv
+data/*.txt
+!data/df_stream_sample.txt
+!data/df_tweets_sample.txt
+*.pyc
+*.csv
+text_preprocess/tweetstream_txt.py
