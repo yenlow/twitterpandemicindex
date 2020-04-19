@@ -1,5 +1,6 @@
 from api.ascendAPI import ascendClient
 from utils.utils import *
+import pandas as pd
 
 pd.set_option('display.max_columns', 100)
 pd.set_option('display.max_colwidth', 50)
@@ -37,7 +38,34 @@ df_symptoms_ll.shape
 df_census_2000 = A.component2pd('COVID_19_Data_Vault','Google_Cloud','US_Census_Bureau_2000_present')
 df_census_2000.shape
 
-# convert csv to json for uploading to ascend
-csv_to_json('../../data/policyactions_state.csv')
-csv_to_json('../../data/riskpop_state.csv')
+# convert csv to csv/json/parquet for uploading to ascend (must be <2MB)
+csv2other('../../data/policyactions_state.csv', 'json')
+csv2other('../../data/riskpop_state.csv', 'json')
+df = csv2other('data/Global_Mobility_Report.csv', 'parquet')
 
+
+
+
+
+import pandas as pd
+header = ['profileId','submissionOrder','age','sex',
+          'hasBeenTested','hasBeenInContactWithInfected',
+          'symptomStart','testResult','submissionDate',
+          'bodyTemperature','smokingHabit','isolationStatus',
+          'diagnosedWithOtherConditions',
+          'DRY_COUGH','EXHAUSTION','FEVER','HEAVY_BREATHING',
+          'MUSCLE_ACHING','DIARRHEA','HEADACHE','SORE_THROAT',
+          'NO_TASTE','NO_SMELL','SLIME_COUGH','RUNNY_NOSE','NAUSEA_OR_VOMITING']
+len(header)
+
+data = pd.read_csv('https://coronastatus.ro/api/reports/reports.csv', skiprows=1, names=header) # use sep="," for coma separation.
+data.describe()
+
+
+import requests
+
+headers = {
+    'accept': 'text/csv',
+}
+
+response = requests.get('https://coronastatus.ro/api/reports/reports.csv', headers=headers)

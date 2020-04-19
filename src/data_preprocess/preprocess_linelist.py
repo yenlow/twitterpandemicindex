@@ -1,21 +1,24 @@
-# Code in Feb to preprocess linelist data
-# Not tested yet in Apr
+# Code to preprocess linelist data
 # https://github.com/yenlow/nCoV2019/blob/master/src/data_clean.py
 # Adapted from R in https://github.com/beoutbreakprepared/nCoV2019
 
-from feather import read_dataframe, write_dataframe
-from functions_clean import *
-
 import pandas as pd
 import matplotlib.pyplot as plt
+from data_preprocess.utils_cleanlinelist import *
 
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 pd.options.mode.use_inf_as_na = True
 
-# Read df.feather from gspread_url (see data_download.py)
-df = read_dataframe('data/df_raw.feather')
-#combined_dat = read_dataframe('data/combined_dat.feather')
+# linelist data from UWash IHME collating most other sources
+df = pd.read_csv('https://raw.githubusercontent.com/beoutbreakprepared/nCoV2019/master/latest_data/latestdata.csv')
+
+# Sample symptoms for annotating
+df.symptoms[df.symptoms.notnull()].tolist()
+df.symptoms[df.symptoms.notnull()].tolist()
+
+df.date_death_or_discharge.value_counts()
+df.country.value_counts()
 
 # get column data types
 print(df.dtypes)
@@ -24,19 +27,18 @@ col_date = list(filter(lambda x:'date' in x, df.columns))
 col_date.remove("travel_history_dates")
 col_admin = list(filter(lambda x:'admin' in x, df.columns))
 col_float = ['age','latitude','longitude']
-col_bin = ['wuhan(0)_not_wuhan(1)','chronic_disease_binary']   #sex',
+col_bin = ['sex','chronic_disease_binary','travel_history_binary']
 col_cat = ['city','province','country','geo_resolution','location','lives_in_Wuhan',
            'outcome','reported_market_exposure','sequence_available']    #drop 'country_new'
 col_str = col_admin + ['ID','chronic_disease','symptoms',
             'travel_history_location','source',
-            'notes_for_discussion','additional_information']
+            'notes_for_discussion','additional_information','data_moderator_initials']
 
-
+########### CODE BELOW NOT TESTED SINCE FEB #########
 ####### DATES #############
 # Clean dates
 # Only date_confirmation can be filled in with an estimate of ~01-01-2020 at this point
-df['date_confirmation'] = df['date_confirmation'].apply(clean_date, missing='01-01-2020', validStart='01-08-2019')
-df.date_confirmation.value_counts(dropna=False).sort_index()
+#df['date_confirmation'].fillna('01.03.2020')
 
 # The other dates should be left None if missing
 for c in ['date_onset_symptoms', 'date_admission_hospital', 'date_death_or_discharge']:
@@ -148,7 +150,8 @@ for c in col_days:
 
 # write cleaned up  df
 print(df.dtypes)
-write_dataframe(df, 'data/df.feather')
+df.to_parquet('../../data/df_linelist.parquet')
+
 
 # construct subset with complete rows
 print(df[df.age.notna()]['male'].value_counts(dropna=False))
@@ -158,9 +161,8 @@ print(df_complete_subset.shape)      #740 rows
 print(df_complete_subset.age.value_counts(dropna=False).sort_index())
 print(df_complete_subset.male.value_counts(dropna=False).sort_index())
 
-write_dataframe(df_complete_subset, 'data/df_complete_subset.feather')
 
-# imputation
+#### impute missing datat
 df_imputed = df.copy()
 
 # Manually impute (faster than sklearn.impute - unstable API)
@@ -169,12 +171,9 @@ df.age.median()   #48 yrs old
 df_imputed.age = df.age.fillna(50,inplace=False)
 print(df_imputed.age.value_counts(dropna=False).sort_index())
 
-
-
 # impute missing gender
 male_fraction = df.male.value_counts()[1.0]/df.male.value_counts().sum()            #0.56
 df_imputed.male.loc[df.male.isna()] = np.random.choice([0,1], p=[1-male_fraction, male_fraction], size=df.male.isna().sum())
 print(df_imputed.male.value_counts(dropna=False).sort_index())
 print(df_imputed.male.value_counts()[1.0]/df_imputed.male.value_counts().sum())     #0.55
 
-write_dataframe(df_imputed, 'data/df_imputed.feather')
