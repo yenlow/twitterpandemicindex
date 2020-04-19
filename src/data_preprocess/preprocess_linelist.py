@@ -15,10 +15,6 @@ df = pd.read_csv('https://raw.githubusercontent.com/beoutbreakprepared/nCoV2019/
 
 # Sample symptoms for annotating
 df.symptoms[df.symptoms.notnull()].tolist()
-df.symptoms[df.symptoms.notnull()].tolist()
-
-df.date_death_or_discharge.value_counts()
-df.country.value_counts()
 
 # get column data types
 print(df.dtypes)
