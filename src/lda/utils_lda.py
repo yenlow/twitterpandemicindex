@@ -6,10 +6,11 @@ from gensim.models.ldamodel import LdaModel
 from gensim.models.ldamulticore import LdaMulticore
 from gensim.models.ldaseqmodel import *
 from gensim import utils as gensim_utils
+from gensim.models.coherencemodel import CoherenceModel
 from gensim.corpora.dictionary import Dictionary
 
 from sklearn.feature_extraction.text import CountVectorizer
-from utils.text_preprocess import *
+from text_preprocess.utils_preprocess import *
 
 
 def get_data(df, start_date, end_date, date_col='created_ts', rm_duplicate=True):
@@ -95,7 +96,7 @@ def reparam_topics(old_model, ntopics, new_id2word, new_date_label):
 	return new_sstats, topics
 
 
-
+# vanilla LDA  (with multicore support)
 def fit_LdaMulticore(gensim_df, id2word,
 				 num_topics, alpha, workers=None,
 				 passes=1, iterations=1000,
@@ -117,6 +118,7 @@ def fit_LdaMulticore(gensim_df, id2word,
 	return model
 
 
+# vanilla LDA (not multicore)
 def fit_LdaModel(gensim_df, id2word,
 				 num_topics, alpha,
 				 passes=15, iterations=10000,
@@ -138,46 +140,54 @@ def fit_LdaModel(gensim_df, id2word,
 	return model
 
 
-def fit_LdaSeqModel(ntopic, gensim_df, id2word, dictionary,
-					ndocs_per_time, dates, rule,
-					passes=10, old_model=None,
-					alpha=0.01, chain_variance=0.005, savetmp=True, metric='umass'):
-	print("---- Fitting " + str(ntopic) + " topics ----")
-	if old_model is None:
-		initialize = 'gensim'
-		sstats = None
-		topic_names = ['{}:{}:{}'.format(rule, dates[-1], i) for i in xrange(ntopic)]
-	else:
-		initialize = 'own'
-		sstats, topic_names = reparam_topics(old_model, ntopic, new_id2word=id2word, new_date_label=dates[-1])
+# dynamic LDA (needs to be manually parallelized)
+# fit dtm
+def fit_LdaSeqModel(gensim_df, id2word, dictionary,
+					ndocs_per_time,
+					ntopics=3, alpha=0.01, chain_variance=0.05,
+					passes=1):
 	model = LdaSeqModel(corpus=gensim_df,
-				time_slice=ndocs_per_time,
-				num_topics=ntopic,
-				passes=passes,
-				initialize=initialize,
-				sstats=sstats,
-				id2word=id2word,
-				alphas=alpha,
-				chain_variance=chain_variance)
-	#Append model attributes
-	model.time = dates
-	model.topic_names = topic_names
+						id2word=id2word,
+						num_topics=ntopics,
+						alphas=alpha,
+						chain_variance=chain_variance,
+						time_slice=ndocs_per_time,
+						passes=passes, chunksize=100,
+						initialize='gensim')
 
-	#Assess topic model
-	if(metric=='umass'):
-		try:
-			metrics = [coherence(model,time=i,corpus=gensim_df,
-								dictionary=dictionary,coherenceType='u_mass')
-						for i in xrange(model.num_time_slices)]
-			model.coherence = metrics
-			print("COHERENCE:")
-			print(metrics)
-		except:
-			print("Can't compute UMass Coherence")
+	coherence = []
+	for i in range(model.num_time_slices):
+		topics_dtm = model.dtm_coherence(time=i)
+		cm_DTM = CoherenceModel(topics=topics_dtm, corpus=gensim_df, dictionary=dictionary, coherence='u_mass')
+		coherence += [cm_DTM.get_coherence()]
 
-	#save model
-	if(savetmp==True):
-		tmpfile = '/tmp/saved_model_k' + str(ntopic) + "_" + datetime.datetime.now().strftime("%s") + '.gz'
-		model.save(tmpfile)
-		print("Model saved to " + tmpfile)
-	return model
+	metrics = {}
+	metrics['coherence'] = sum(coherence) / len(coherence)
+
+	#	print("Mean coherence: {}".format(coherence_mean))
+
+	return model, metrics
+
+
+def doc_topic_dist(model):
+	doc_topic = model.gammas/model.gammas.sum(axis=1)[:, np.newaxis]
+	doc_topic_by_time = np.vsplit(doc_topic, np.cumsum(model.time_slice)[:-1])  # split by time window (days)
+	return(doc_topic_by_time)
+
+
+def top_words(lda, topic_names=None, topn=20):
+	if not topic_names:
+		topic_names = [k for k in range(lda.num_topics)]
+
+	top_words = {}
+	for k in range(lda.num_topics):
+		top_words[topic_names[k]] = [lda.id2word[id] for id, dist in lda.get_topic_terms(k, topn=topn)]
+	top_words_df = pd.DataFrame(top_words, columns=topic_names)
+	return top_words_df
+
+
+def top_docs(doc_topic, df, topn=20):
+  top_docs_id = (-doc_topic).argsort(axis=0)[0:topn].T
+  top_docs_df = df.iloc[top_docs_id.flatten()][['created_dt','user.name','all_text']]
+  top_docs_df['topic'] = np.repeat(range(doc_topic.shape[1]),topn)
+  return top_docs_df
