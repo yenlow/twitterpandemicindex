@@ -16,3 +16,4 @@ data/.DS_Store
 !data/locations_mapping.tsv
 text_preprocess/tweetstream_txt.py
 output/*
+!output/20200421_191436/
