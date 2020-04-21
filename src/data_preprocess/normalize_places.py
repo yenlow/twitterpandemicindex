@@ -1,4 +1,5 @@
 # Code to normalize places using geocoder
+# https://github.com/DenisCarriere/geocoder/blob/master/README.md
 
 import pandas as pd
 from itertools import islice
