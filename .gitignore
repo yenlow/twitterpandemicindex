@@ -1,3 +1,4 @@
+.idea
 src/api/config.py
 __pycache__
 data/*.pkl

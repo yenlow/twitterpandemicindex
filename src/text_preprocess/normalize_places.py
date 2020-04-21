@@ -5,14 +5,14 @@ import pandas as pd
 from itertools import islice
 import geocoder
 from country_converter import CountryConverter
-from data_preprocess.dict_places import *
+from text_preprocess.dict_places import *
 from api.config import mapquest_api
 
 pd.set_option('display.max_columns', 100)
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_rows', 300)
 
-unnormalized_loc_file = 'data/locations_test.tsv'
+unnormalized_loc_file = '../../data/locations_test.tsv'
 loc_mappings_outfile = 'data/locations_mapping.tsv'
 mapquest_key = mapquest_api()
 
