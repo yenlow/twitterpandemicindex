@@ -1,0 +1,289 @@
+address	type	country_code	state	county	city	original
+US	COUNTRY	US				united states
+IN	COUNTRY	IN				india
+London	CITY	GB		Westminster	London	london, england
+US	COUNTRY	US				usa
+London	CITY	GB		Westminster	London	london
+New York	CITY	US	NY	New York County	New York	new york, ny
+Washington	CITY	US	DC	District of Columbia	Washington	washington, dc
+Los Angeles	CITY	US	CA	Los Angeles County	Los Angeles	los angeles, ca
+CA	STATE	US	CA			california, usa
+FR	COUNTRY	FR				france
+Lagos	CITY	NG			Lagos	lagos, nigeria
+GB	COUNTRY	GB				united kingdom
+Mexico City	CITY	MX	DIF		Mexico City	méxico
+Paris	CITY	FR	ÎLE-DE-FRANCE	Paris	Paris	paris, france
+ES	COUNTRY	ES				españa
+NG	COUNTRY	NG				nigeria
+VE	COUNTRY	VE				venezuela
+CA	COUNTRY	CA				canada
+New Delhi	CITY	IN	DELHI		New Delhi	new delhi, india
+Chicago	CITY	US	IL	Cook County	Chicago	chicago, il
+FL	STATE	US	FL			florida, usa
+Uk	CITY	RU			Uk	uk
+Buenos Aires	CITY	AR			Buenos Aires	buenos aires, argentina
+TX	STATE	US	TX			texas, usa
+AR	COUNTRY	AR				argentina
+BR	COUNTRY	BR				brasil
+IT	COUNTRY	IT				italia
+New York	CITY	US	NY	New York County	New York	new york, usa
+AU	COUNTRY	AU				australia
+GB	STATE	GB	ENGLAND			england, united kingdom
+Paris	CITY	FR	ÎLE-DE-FRANCE	Paris	Paris	paris
+Atlanta	CITY	US	GA	Fulton County	Atlanta	atlanta, ga
+Madrid	CITY	ES	MADRID	Madrid	Madrid	madrid
+Mumbai	CITY	IN	MAHARASHTRA		Mumbai	mumbai, india
+Toronto	CITY	CA	ON		Toronto	toronto, ontario
+Earth	CITY	US	TX	Lamb County	Earth	earth
+New York	CITY	US	NY	New York County	New York	new york
+San Francisco	CITY	US	CA	San Francisco County	San Francisco	san francisco, ca
+Houston	CITY	US	TX	Harris County	Houston	houston, tx
+CO	COUNTRY	CO				colombia
+Boston	CITY	US	MA	Suffolk County	Boston	boston, ma
+ID	COUNTRY	ID				indonesia
+CL	COUNTRY	CL				chile
+Caracas	CITY	VE			Caracas	caracas, venezuela
+Nairobi	CITY	KE			Nairobi	nairobi, kenya
+São Paulo	CITY	BR	SP		São Paulo	são paulo, brasil
+Seattle	CITY	US	WA	King County	Seattle	seattle, wa
+ZA	COUNTRY	ZA				south africa
+Barcelona	CITY	ES	CATALUÑA/CATALUNYA		Barcelona	barcelona
+MY	COUNTRY	MY				malaysia
+Brooklyn	CITY	US	NY	Kings County	Brooklyn	brooklyn, ny
+Bogotá	CITY	CO	CUNDINAMARCA		Bogotá	bogotá, d.c., colombia
+Rio de Janeiro	CITY	BR	RJ	Rio de Janeiro	Rio de Janeiro	rio de janeiro, brasil
+Philadelphia	CITY	US	PA	Philadelphia County	Philadelphia	philadelphia, pa
+Los Angeles	CITY	US	CA	Los Angeles County	Los Angeles	los angeles
+Santiago	CITY	CL	XIII REGIÓN METROPOLITANA DE SANTIAGO		Santiago	santiago, chile
+PK	COUNTRY	PK				pakistan
+Austin	CITY	US	TX	Travis County	Austin	austin, tx
+Dallas	CITY	US	TX	Dallas County	Dallas	dallas, tx
+New York	CITY	US	NY	New York County	New York	new york city
+Miami	CITY	US	FL	Miami-Dade	Miami	miami, fl
+NJ	STATE	US	NJ			new jersey, usa
+New York	CITY	US	NY	New York County	New York	nyc
+Madrid	CITY	ES	MADRID	Madrid	Madrid	madrid, comunidad de madrid
+Istanbul	CITY	TR	İSTANBUL	Fatih	Istanbul	i̇stanbul, türkiye
+Toronto	CITY	CA	ON		Toronto	toronto
+San Diego	CITY	US	CA	San Diego County	San Diego	san diego, ca
+Las Vegas	CITY	US	NV	Clark County	Las Vegas	las vegas, nv
+TX	STATE	US	TX			texas
+PH	COUNTRY	PH				philippines
+Singapore	CITY	SG			Singapore	singapore
+Mexico City	CITY	MX	DIF		Mexico City	mexico
+CA	STATE	US	CA			california
+MI	STATE	US	MI			michigan, usa
+PA	STATE	US	PA			pennsylvania, usa
+SV	COUNTRY	SV				el salvador
+NC	STATE	US	NC			north carolina, usa
+New Delhi	CITY	IN	DELHI		New Delhi	new delhi
+Lima	CITY	PE	DEPARTMENT OF LIMA		Lima	lima, peru
+Hong Kong	CITY	HK	HONG KONG		Hong Kong	hong kong
+London	CITY	GB	ENG		London	london, uk
+Mumbai	CITY	IN	MAHARASHTRA		Mumbai	mumbai
+Chicago	CITY	US	IL	Cook County	Chicago	chicago
+Abuja	CITY	NG			Abuja	abuja, nigeria
+Sydney	CITY	AU	NSW		Sydney	sydney, new south wales
+IE	COUNTRY	IE				ireland
+Johannesburg	CITY	ZA	GAUTENG		Johannesburg	johannesburg, south africa
+EC	COUNTRY	EC				ecuador
+PH	COUNTRY	PH				philippines
+Bengaluru	CITY	IN	KARNATAKA		Bengaluru	bengaluru, india
+Hyderabad	CITY	IN			Hyderabad	hyderabad, india
+OH	STATE	US	OH			ohio, usa
+VA	STATE	US	VA			virginia, usa
+Guatemala City	CITY	GT	GUATEMALA		Guatemala City	guatemala
+Panama	CITY	PA			Panama	panamá
+Portland	CITY	US	OR	Multnomah County	Portland	portland, or
+Melbourne	CITY	AU	VIC		Melbourne	melbourne, victoria
+CA	STATE	CA	ON			ontario, canada
+Madrid	CITY	ES	MADRID	Madrid	Madrid	madrid, españa
+GA	STATE	US	GA			georgia, usa
+Washington	CITY	US	DC	District of Columbia	Washington	washington, d.c.
+Denver	CITY	US	CO	Denver County	Denver	denver, co
+ES	STATE	ES	CATALUÑA/CATALUNYA			catalunya
+Phoenix	CITY	US	AZ	Maricopa County	Phoenix	phoenix, az
+FL	STATE	US	FL			florida
+TR	COUNTRY	TR				türkiye
+Montevideo	CITY	UY	MONTEVIDEO		Montevideo	montevideo, uruguay
+Camino del Buen Aire	STREET	AR			Buenos Aires	ciudad autónoma de buenos aire
+Nashville	CITY	US	TN	Davidson County	Nashville	nashville, tn
+Mexico City	CITY	MX	DIF		Mexico City	ciudad de méxico
+Buenos Aires	CITY	AR			Buenos Aires	buenos aires
+Manchester	CITY	GB		Lancashire	Manchester	manchester, england
+MA	STATE	US	MA			massachusetts, usa
+FR	STATE	FR	ÎLE-DE-FRANCE			ile-de-france, france
+CO	STATE	US	CO			colorado, usa
+AZ	STATE	US	AZ			arizona, usa
+Córdoba	CITY	AR			Córdoba	córdoba, argentina
+MD	STATE	US	MD			maryland, usa
+Barcelona	CITY	ES	CATALUÑA/CATALUNYA		Barcelona	barcelona, españa
+DE	COUNTRY	DE				germany
+Pittsburgh	CITY	US	PA	Allegheny County	Pittsburgh	pittsburgh, pa
+Chennai	CITY	IN	TAMIL NADU		Chennai	chennai, india
+Washington	CITY	US	DC	District of Columbia	Washington	washington, usa
+San Francisco	CITY	US	CA	San Francisco County	San Francisco	san francisco
+Accra	CITY	GH			Accra	accra, ghana
+Charlotte	CITY	US	NC	Mecklenburg County	Charlotte	charlotte, nc
+IT	COUNTRY	IT				italy
+DE	COUNTRY	DE				deutschland
+IL	STATE	US	IL			illinois, usa
+Lagos	CITY	NG			Lagos	lagos
+Baltimore	CITY	US	MD	Baltimore City	Baltimore	baltimore, md
+ES	COUNTRY	ES				spain
+Rome	CITY	IT	LAZIO	Province of Rome	Rome	roma
+GB	STATE	GB	ENGLAND			england
+Orlando	CITY	US	FL	Orange County	Orlando	orlando, fl
+Minneapolis	CITY	US	MN	Hennepin County	Minneapolis	minneapolis, mn
+San Antonio	CITY	US	TX	Bexar County	San Antonio	san antonio, tx
+Karachi	CITY	PK	SINDH		Karachi	karachi, pakistan
+Manhattan	CITY	US	NY	New York County	Manhattan	manhattan, ny
+Sydney	CITY	AU	NSW		Sydney	sydney, australia
+Bangkok	CITY	TH			Bangkok	bangkok, thailand
+Vancouver	CITY	CA	BC		Vancouver	vancouver, british columbia
+São Paulo	CITY	BR	SP		São Paulo	são paulo
+San Salvador	CITY	SV			San Salvador	san salvador, el salvador
+Berlin	CITY	DE	BERLIN	Berlin	Berlin	berlin
+Islamabad	CITY	PK	ISLAMABAD CAPITAL TERRITORY		Islamabad	islamabad, pakistan
+Rio de Janeiro	CITY	BR	RJ	Rio de Janeiro	Rio de Janeiro	rio de janeiro
+Pune	CITY	IN			Pune	pune, india
+Kampala	CITY	UG			Kampala	kampala, uganda
+GB	STATE	GB	SCOTLAND			scotland
+Detroit	CITY	US	MI	Wayne County	Detroit	detroit, mi
+Asuncion	CITY	PY	ASUNCIÓN CAPITAL DISTRICT		Asuncion	paraguay
+GH	COUNTRY	GH				ghana
+Montreal	CITY	CA	QC		Montreal	montréal, québec
+Monterrey	CITY	MX	NLE		Monterrey	monterrey, nuevo león
+GB	STATE	GB	SCOTLAND			scotland, united kingdom
+KE	COUNTRY	KE				kenya
+BR	COUNTRY	BR				brazil
+Dublin	CITY	IE			Dublin	dublin city, ireland
+Melbourne	CITY	AU	VIC		Melbourne	melbourne, australia
+Tampa	CITY	US	FL	Hillsborough County	Tampa	tampa, fl
+New Orleans	CITY	US	LA	Orleans Parish	New Orleans	new orleans, la
+Bengaluru	CITY	IN	KARNATAKA		Bengaluru	bangalore
+Guayaquil	CITY	EC		Guayaquil Canton	Guayaquil	guayaquil, ecuador
+Via Lazio	STREET	IT	Lazio		Roma	roma, lazio
+Cape Town	CITY	ZA	WESTERN CAPE	Cape Town	Cape Town	cape town, south africa
+Columbus	CITY	US	OH	Franklin County	Columbus	columbus, oh
+NZ	COUNTRY	NZ				new zealand
+MN	STATE	US	MN			minnesota, usa
+Dubai	CITY	AE			Dubai	dubai, united arab emirates
+Glasgow	CITY	GB			Glasgow	glasgow, scotland
+Sydney	CITY	AU	NSW		Sydney	sydney
+OR	STATE	US	OR			oregon, usa
+Lahore	CITY	PK	PUNJAB		Lahore	lahore, pakistan
+Sacramento	CITY	US	CA	Sacramento County	Sacramento	sacramento, ca
+Berlin	CITY	DE	BERLIN	Berlin	Berlin	berlin, deutschland
+NJ	STATE	US	NJ			new jersey
+CU	COUNTRY	CU				cuba
+WI	STATE	US	WI			wisconsin, usa
+NL	COUNTRY	NL				nederland
+Washington	CITY	US	DC	District of Columbia	Washington	washington dc
+Calgary	CITY	CA	AB		Calgary	calgary, alberta
+Bogotá	CITY	CO	CUNDINAMARCA		Bogotá	bogotá, colombia
+Mexico City	CITY	MX	DIF		Mexico City	mexico city
+Ottawa	CITY	CA	ON		Ottawa	ottawa, ontario
+Quito	CITY	EC	PROVINCIA DE PICHINCHA		Quito	quito, ecuador
+TN	STATE	US	TN			tennessee, usa
+Cleveland	CITY	US	OH	Cuyahoga County	Cleveland	cleveland, oh
+Toronto	CITY	CA	ON		Toronto	toronto, canada
+Medellín	CITY	CO	ANTIOQUIA		Medellín	medellín, colombia
+HN	COUNTRY	HN				honduras
+Rosario	CITY	AR			Rosario	rosario, argentina
+MI	STATE	US	MI			michigan
+NI	COUNTRY	NI				nicaragua
+Berlin	CITY	DE	BERLIN	Berlin	Berlin	berlin, germany
+Boston	CITY	US	MA	Suffolk County	Boston	boston
+IN	STATE	US	IN			indiana, usa
+JP	COUNTRY	JP				日本
+Heróica Puebla de Zaragoza	CITY	MX	PUE		Heróica Puebla de Zaragoza	puebla, méxico
+PT	COUNTRY	PT				portugal
+Indianapolis	CITY	US	IN	Marion County	Indianapolis	indianapolis, in
+Madrid	CITY	ES	MADRID	Madrid	Madrid	madrid, spain
+DO	COUNTRY	DO				dominican republic
+Delhi	CITY	IN	DELHI		Delhi	delhi
+UY	COUNTRY	UY				uruguay
+SC	STATE	US	SC			south carolina, usa
+LK	COUNTRY	LK				sri lanka
+Guadalajara	CITY	MX	Jalisco		Guadalajara	guadalajara, jalisco, mexico
+CT	STATE	US	CT			connecticut, usa
+Oakland	CITY	US	CA	Alameda County	Oakland	oakland, ca
+PR	STATE	US	PR			puerto rico
+TH	COUNTRY	TH				thailand
+Manila	CITY	PH			Manila	manila, philippines
+PE	COUNTRY	PE				peru
+MO	STATE	US	MO			missouri, usa
+Edinburgh	CITY	GB		Midlothian	Edinburgh	edinburgh, scotland
+Lyon	CITY	FR		Rhône	Lyon	lyon, france
+Milan	CITY	IT	LOMBARDY	Milan	Milan	milano, lombardia
+St Louis	CITY	US	MO	St. Louis County	St Louis	st louis, mo
+Seattle	CITY	US	WA	King County	Seattle	seattle
+Nairobi	CITY	KE			Nairobi	nairobi
+Queens	CITY	US	NY	Queens County	Queens	queens, ny
+Lima	CITY	PE	DEPARTMENT OF LIMA		Lima	lima, perú
+Chennai	CITY	IN	TAMIL NADU		Chennai	chennai
+Raleigh	CITY	US	NC	Wake County	Raleigh	raleigh, nc
+JP	COUNTRY	JP				japan
+US	COUNTRY	US				US
+Melbourne	CITY	AU	VIC		Melbourne	melbourne
+Bogotá	CITY	CO	CUNDINAMARCA		Bogotá	bogotá
+Kolkata	CITY	IN		Kolkata district	Kolkata	kolkata, india
+Brussels	CITY	BE	BRUSSELS-CAPITAL REGION		Brussels	brussels, belgium
+Kansas City	CITY	US	MO	Jackson County	Kansas City	kansas city, mo
+US Highway 165 West	STREET	US	AR		England	north west, england
+Brasília	CITY	BR	DF		Brasília	brasília, brasil
+Valencia	CITY	ES	VALENCIAN COMMUNITY	Valencia	Valencia	valencia, españa
+Jakarta	CITY	ID			Jakarta	jakarta
+GB	STATE	GB	ENGLAND			england
+KY	STATE	US	KY			kentucky, usa
+Caracas	CITY	VE			Caracas	caracas
+South California Drive	STREET	PH	Calabarzon		Imus	southern california
+Birmingham	CITY	GB		West Midlands	Birmingham	birmingham, england
+US	COUNTRY	US				united states of america
+Dublin	CITY	IE			Dublin	dublin, ireland
+Barranquilla	CITY	CO	ATLÁNTICO	Barranquilla	Barranquilla	barranquilla, colombia
+Louisville	CITY	US	KY	Jefferson County	Louisville	louisville, ky
+Liverpool	CITY	GB		Merseyside	Liverpool	liverpool, england
+Caracas	CITY	VE			Caracas	caracas - venezuela
+BO	COUNTRY	BO				bolivia
+CR	COUNTRY	CR				costa rica
+Buffalo	CITY	US	NY	Erie County	Buffalo	buffalo, ny
+Cincinnati	CITY	US	OH	Hamilton County	Cincinnati	cincinnati, oh
+Noida	CITY	IN			Noida	noida, india
+Dublin	CITY	IE			Dublin	dublin
+NL	COUNTRY	NL				the netherlands
+JM	COUNTRY	JM				jamaica
+OH	STATE	US	OH			ohio
+BE	STATE	BE	BRUSSELS-CAPITAL REGION			brussels
+Seville	CITY	ES	ANDALUSIA	Sevilla	Seville	sevilla, españa
+Milwaukee	CITY	US	WI	Milwaukee County	Milwaukee	milwaukee, wi
+Asuncion	CITY	PY	ASUNCIÓN CAPITAL DISTRICT		Asuncion	asuncion, paraguay
+Belo Horizonte	CITY	BR	MINAS GERAIS		Belo Horizonte	belo horizonte, brasil
+Milan	CITY	IT	LOMBARDY	Milan	Milan	milano
+Pretoria	CITY	ZA	GAUTENG		Pretoria	pretoria, south africa
+Mexico City	CITY	MX	DIF		Mexico City	mexico city
+AL	STATE	US	AL			alabama, usa
+Perth	CITY	AU	WA		Perth	perth, western australia
+Manchester	CITY	GB		Lancashire	Manchester	manchester
+Memphis	CITY	US	TN	Shelby County	Memphis	memphis, tn
+CO	STATE	US	CO			colorado
+Ankara	CITY	TR			Ankara	ankara, türkiye
+Mendoza	CITY	AR			Mendoza	mendoza, argentina
+Amsterdam	CITY	NL			Amsterdam	amsterdam
+SN	COUNTRY	SN				senegal
+Santiago	CITY	CL	XIII REGIÓN METROPOLITANA DE SANTIAGO		Santiago	santiago de chile
+DO	COUNTRY	DO				república dominicana
+New York	CITY	US	NY	New York County	New York	New York
+San Jose	CITY	US	CA	Santa Clara County	San Jose	san jose, ca
+Delhi	CITY	IN	DELHI		Delhi	delhi, india
+Mexico City	CITY	MX	DIF		Mexico City	mexico city
+BE	COUNTRY	BE				belgium
+IN	STATE	IN	JAMMU AND KASHMIR			jammu and kashmir
+Panama	CITY	PA			Panama	panama
+MV	COUNTRY	MV				maldives
+Seville	CITY	ES	ANDALUSIA	Sevilla	Seville	sevilla
+Jaipur	CITY	IN	RAJASTHAN		Jaipur	jaipur, india
+Lima	CITY	PE	DEPARTMENT OF LIMA		Lima	lima
+Tucson	CITY	US	AZ	Pima County	Tucson	tucson, az
+Kuala Lumpur	CITY	MY			Kuala Lumpur	kuala lumpur

@@ -30,3 +30,8 @@ def ascend_api(profile="trial"):
     secret_key = config.get(profile, "ascend_secret_access_key")
 #    access_token = config.get(profile, "ascend_access_token")
     return access_key, secret_key
+
+def mapquest_api():
+    consumer_key = "xxx"
+    consumer_secret = "xxx"
+    return consumer_key
