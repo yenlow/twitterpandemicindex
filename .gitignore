@@ -1,6 +1,10 @@
+__pycache__
+*.pyc
+*.csv
+*.parquet
+.DS_Store
 .idea
 src/api/config.py
-__pycache__
 data/*.pkl
 data/*.csv
 data/*.txt
@@ -10,7 +14,5 @@ data/.DS_Store
 !data/df_stream_sample.txt
 !data/df_tweets_sample.txt
 !data/locations_mapping.tsv
-*.pyc
-*.csv
-*.parquet
 text_preprocess/tweetstream_txt.py
+output/*
