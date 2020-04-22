@@ -3,7 +3,7 @@
 
 import pandas as pd
 from itertools import islice
-import geocoder, re
+import geocoder, re, io
 from country_converter import CountryConverter
 from text_preprocess.dict_places import *
 from api.config import mapquest_api
@@ -13,23 +13,29 @@ pd.set_option('display.max_columns', 100)
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_rows', 300)
 
-unnormalized_loc_file = 'data/locations_test1.tsv'
+unnormalized_loc_file = 'data/locations_clean_user_location.tsv'
 loc_mappings_outfile = 'data/locations_mapping.tsv'
-mapquest_key = mapquest_api()
 
+colnames = ['place_norm','type','country_code','state','county','city', 'latitude','longitude']
+col_order = ['place_original','place_queried'] + colnames
+
+
+mapquest_key = mapquest_api()
 cc = CountryConverter()
 
-places_input = []
-places_queried = []
 places_output = []
-with open(unnormalized_loc_file, newline='\n') as f:
-    next(f) #skip header line
+with io.open(loc_mappings_outfile, "w", encoding='UTF-8') as fw:
+    fw.write(u"\t".join(col_order)+"\n")
+
+with open(unnormalized_loc_file, newline='\n') as fr:
+    next(fr) #skip header line
     while True:
-        next_n_lines = list(islice(f, 100))
+        next_n_lines = list(islice(fr, 100))
         if not next_n_lines:
             break
         else:
             places_100 = []
+            places_100_ori = []
             for i in next_n_lines:
                 place_ori = i.split('\t')[0]
                 place = place_ori.strip().lower()
@@ -41,50 +47,41 @@ with open(unnormalized_loc_file, newline='\n') as f:
                     else:
                         place_queried = place
                     places_100.append(place_queried)
-                    places_queried.append(place_queried)
-                    places_input.append(place_ori)
+                    places_100_ori.append(place_ori)
 
             # Call mapquest API to query place names (up to 100 per batch)
             g = geocoder.mapquest(places_100, method='batch', key=mapquest_key)
 
-            for result in g:
-                places_output.append([result.address, result.quality,
-                                        result.country, result.state,
-                                        result.county, result.city,
-                                        result.lat, result.lng])
+            for i in range(len(g)):
+                result = g[i]
 
-colnames = ['place_norm','type','country_code','state','county','city', 'latitude','longitude']
-place_df = pd.DataFrame(places_output, columns = colnames)
-place_df['place_original'] = places_input
-place_df['place_queried'] = places_queried
-col_order = ['place_original','place_queried'] + colnames
-place_df = place_df[col_order]
-print(place_df.sample(50))
+                # Instead of inaccurate street names, use either city or country
+                place_norm = result.address
+                if result.quality=='STREET':
+                    place_norm = result.city if result.city else result.country
+#                    print(f"{result.address} is now {place_norm} or {result.city}")
+                # Fix bug in mapquest: replace country_code with state if available
+                if result.quality=='STATE' and result.state!='':
+                    # TODO: do the same for brazil, MX, AU, CA states
+                    if result.country=='US':
+                        place_norm = abbrev_us_state.get(result.state)
+#                        print(f"{result.state} is now {place_norm} or {abbrev_us_state.get(result.state)}")
+                    else:
+                        place_norm = result.state
+#                        print(f"{result.address} is now {place_norm} or {result.state}")
+                # Recode country code to country name to avoid ambiguity with state abbrev
+                # e.g. ID = Indonesia or Idaho
+                if result.quality=='COUNTRY' and result.address==result.country:
+                    place_norm = cc.convert(result.address, to='name_short')
+#                    print(f"{result.address} is now {place_norm}")
 
-# Instead of inaccurate street names, use either citty or country
-m = (place_df.type=='STREET')
-place_df.place_norm[m] = place_df.city[m].combine_first(place_df.country_code[m])
-
-# Fix bug in mapquest: replace country_code with state if available
-m = (place_df.type=='STATE') & (place_df.state!='')
-place_df.place_norm[m] = place_df.state[m]
-
-# Recode country code to country name to avoid ambiguity with state abbrev
-# e.g. ID = Indonesia or Idaho
-m = (place_df.place_norm==place_df.country_code) & (place_df.type=='COUNTRY')
-place_df.place_norm[m] = place_df.place_norm[m].apply(cc.convert, to='name_short')
-
-# Recode state abbrev to state name to avoid ambiguity with country code
-# e.g. ID = Indonesia or Idaho
-m = (place_df.country_code=='US') & (place_df.place_norm==place_df.state) & (place_df.type=='STATE')
-place_df.place_norm[m] = place_df.place_norm[m].apply(abbrev_us_state.get)
-#TODO: do the same for brazil, MX states
-
-print(place_df.sample(50))
-
-
-# Save final mapping table
-place_df.to_csv(loc_mappings_outfile, sep="\t", index=False)
+                desired_fields = [  place_norm, result.quality,
+                                    result.country, result.state,
+                                    result.county, result.city,
+                                    str(result.lat), str(result.lng)]
+                output_line = f"{places_100_ori[i]}\t{places_100[i]}\t" + "\t".join(desired_fields) + "\n"
+                with io.open(loc_mappings_outfile, "a", encoding='utf-8') as fw:
+                    fw.write(output_line)
 
 
 ########### using free geonames api
