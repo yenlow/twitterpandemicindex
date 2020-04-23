@@ -23,6 +23,10 @@ col_order = ['place_original','place_queried'] + colnames
 mapquest_key = mapquest_api()
 cc = CountryConverter()
 
+🏴‍☠️
+🏴‍☠️
+🏴‍☠
+
 places_output = []
 with io.open(loc_mappings_outfile, "w", encoding='UTF-8') as fw:
     fw.write(u"\t".join(col_order)+"\n")
@@ -85,7 +89,7 @@ with open(unnormalized_loc_file, newline='\n') as fr:
 
 
 ########### using free geonames api
-g = geocoder.geonames('London, England', key='xxx')
+g = geocoder.geonames('Pic de Font Blanca', key='yenlow')
 #geonames
 g.geojson
 g.address       #London
@@ -94,4 +98,9 @@ g.country       #United Kingdom
 g.country_code  #GB
 g.description   #capital of a political entity
 g.geonames_id   #2643743
+g.lat   #'51.50853'
+g.lng   #'-0.12574'
 
+g.code
+
+g = geocoder.google('Mountain View, CA')

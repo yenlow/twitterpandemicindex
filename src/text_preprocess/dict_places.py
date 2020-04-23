@@ -7,7 +7,15 @@
 # Roger Allen has waived all copyright and related or neighboring
 # rights to this code.
 
+
 import pandas as pd
+import pycountry
+from fuzzywuzzy import process
+from simstring.feature_extractor.character_ngram import CharacterNgramFeatureExtractor
+from simstring.measure.cosine import CosineMeasure
+from simstring.database.dict import DictDatabase
+from simstring.searcher import Searcher
+
 
 # Nonsensical places to exclude from search
 excluded_places = ['',' ','none','\n', '\\n','europe','planet earth',
@@ -210,6 +218,11 @@ remap_dict = {
 'bonny  in  rivers  state': 'bonny, nigeria'
 }
 
+countries = {
+'uk':'GB',
+'brasil':'BR'
+}
+
 us_state_abbrev = {
     'Alabama': 'AL',
     'Alaska': 'AK',
@@ -272,6 +285,55 @@ us_state_abbrev = {
 # thank you to @kinghelix and @trevormarburger for this idea
 abbrev_us_state = dict(map(reversed, us_state_abbrev.items()))
 
+
+#https://unicode.org/Public/emoji/13.0/emoji-test.txt
 #https://apps.timwhitlock.info/emoji/tables/iso3166
-df_emoji_flags = pd.read_csv('/Users/yensia-low/PycharmProjects/coronaprep/src/text_preprocess/dict_emoji_flags.txt',sep="\t")
-emoji_flags = df_emoji_flags.Emoji.to_list()
+with open('data/emoji_flags.txt','r') as f:
+    emoji_flags = set(f.read().splitlines())
+
+# get countries from their ISO2 codes
+dict_country_codes = {i.alpha_2:i.name.lower() for i in pycountry.countries}
+# reverse dict_countries
+dict_countries = {v: k for k, v in dict_country_codes.items()}
+
+def get_states(country_code):
+    if len(country_code)!=2:
+        country_code = pycountry.countries.search_fuzzy(country_code)[0].alpha_2
+    nested_list = [[i.code.split('-')[-1], i.name, i.type] for i in pycountry.subdivisions.get(country_code=country_code)]
+    df_state = pd.DataFrame(nested_list, columns=['code','name','type']).sort_values('code')
+    df_state.reset_index(drop=True,inplace=True)
+    return df_state
+
+# get states
+# get_states('england')
+
+
+# get cities from geonames mapping tables
+df_geonames = pd.read_csv('data/cities500.txt',sep="\t")
+df_geonames['place'] = df_geonames.asciiname + ',' + df_geonames.name + ',' + df_geonames.alternatenames
+
+
+
+# simstring is much 10x faster than fuzzywuzzy but worse metrics
+def top_simstring(x, pattern, threshold=0.5):
+    db = DictDatabase(CharacterNgramFeatureExtractor(10))
+    try:
+        choices = x.lower().split(",")
+        for c in choices:
+            db.add(c)
+        searcher = Searcher(db, CosineMeasure())
+        score, best_match = searcher.ranked_search(pattern, alpha=threshold)[0]
+        return score
+    except:
+        return None
+
+
+def get_fuzz_ratio(x, pattern='San Julia'):
+    try:
+        choices = x.lower().split(",")
+        best_match, score = process.extractOne(pattern, choices)
+        return score
+    except:
+        return None
+
+
