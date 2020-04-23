@@ -220,7 +220,10 @@ remap_dict = {
 
 countries = {
 'uk':'GB',
-'brasil':'BR'
+'brasil':'BR',
+'usa' : 'US',
+'united states of america' : 'US',
+'republic of paraguay': 'PY'
 }
 
 us_state_abbrev = {
