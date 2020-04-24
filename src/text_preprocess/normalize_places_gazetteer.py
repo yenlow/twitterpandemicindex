@@ -84,14 +84,17 @@ f.close()
 with io.open(loc_mappings_outfile, "w", encoding='UTF-8') as fw:
     fw.write("geonameid\tplace_norm\n")
 
+with io.open(loc_unmatched_outfiled, "w", encoding='UTF-8') as fw_no:
+    fw_no.write("place_norm\n")
+
 #dict_geonameid = {}
-set_no_geonameid = set()
+#set_no_geonameid = set()
 for k in dict_synonymns.keys():
     df_geonames['score'] = np.nan   #reset scores
     state_code = None
     l = k.split(",")
-    city = l[0]
-    country = l[-1].strip()
+    city = re.sub('^\s+|\s+$|\)|\(','',l[0])
+    country = re.sub('^\s+|\s+$|\)|\(','',l[-1])
 #    country = l[-1].strip() if len(l)==2 else None
     if country in set_countries:
         # match country
@@ -150,7 +153,7 @@ for k in dict_synonymns.keys():
         with io.open(loc_unmatched_outfiled, "a", encoding='utf-8') as fw_no:
             fw_no.write(f"{k}\n")
 #        dict_geonameid[k] = None
-        set_no_geonameid.add(k)
+#        set_no_geonameid.add(k)
 
 #103s for 500 or 2.4 days for 1mil using str.contains (12% unmatched)
 #93s for 500 or 2.2 days for 1mil using fuzz.ratio (5% unmatched)
@@ -164,9 +167,9 @@ for k in dict_synonymns.keys():
 # f.close()
 
 #5% unmatched
-len(set_no_geonameid)/len(dict_synonymns)
-
-set_no_geonameid
+# len(set_no_geonameid)/len(dict_synonymns)
+#
+# set_no_geonameid
 
 # Preview dict_geonameid
 # for place,geonameid in dict_geonameid.items():

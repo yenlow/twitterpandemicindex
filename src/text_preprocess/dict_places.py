@@ -211,7 +211,7 @@ remap_dict = {
 'pacific northwest': 'wa, us',
 'pnw': 'wa, us',
 'washington state': 'wa, us',
-'dmv (d.c., Mmryland, virginia)': 'washington dc',
+'dmv (d.c., maryland, virginia)': 'washington dc',
 'dmv': 'washington dc',
 'd(m)v': 'washington dc',
 'city of brotherly love':'philadelphia',
