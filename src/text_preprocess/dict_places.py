@@ -1,23 +1,96 @@
-# United States of America Python Dictionary to translate States,
-# Districts & Territories to Two-Letter codes and vice versa.
-#
-# https://gist.github.com/rogerallen/1583593
-#
-# Dedicated to the public domain.  To the extent possible under law,
-# Roger Allen has waived all copyright and related or neighboring
-# rights to this code.
-
+# Load geonames, emoji flags tables and hardcode dictionaries for mapping places to known names
 
 import pandas as pd
-import pycountry
-from fuzzywuzzy import process
-from simstring.feature_extractor.character_ngram import CharacterNgramFeatureExtractor
-from simstring.measure.cosine import CosineMeasure
-from simstring.database.dict import DictDatabase
-from simstring.searcher import Searcher
+from utils.utils import *
+from utils.utils_places import *
+
+print("Loading geonames dataframes and dictionaries...")
+
+### Read in geonames mapping tables
+# http://download.geonames.org/export/dump/
+# Get cities from geonames mapping tables
+# Parse readme for cities column names
+geonames_readme = 'https://download.geonames.org/export/dump/readme.txt'
+geonames_countryInfo = 'https://download.geonames.org/export/dump/countryInfo.txt'
+
+prefix = "The main 'geoname' table has the following fields :\n-+\n"
+suffix = "\n{2,}AdminCodes:"
+pattern = f'{prefix}((.|\n)*){suffix}'
+text_blob = parse_blob(geonames_readme,pattern,1)
+col_cities = re.split('\s+:.+\n',text_blob)
+col_cities = [i.strip() for i in col_cities if i!='']
+
+# Parse readme for states column names
+col_admin1 = [i.strip() for i in parse_line(geonames_readme,
+                                            r'^admin1CodesASCII.txt.*Columns: (.*)$',1).split(",")]
+
+# Parse countryInfo.txt header for country column names
+prefix = "#"
+suffix = "\nAD\t"
+pattern = f'{prefix}(ISO(.|\n)*){suffix}'
+text_blob = parse_blob(geonames_countryInfo,pattern,1)
+col_countries = text_blob.split("\t")
+col_countries = [i.strip() for i in col_countries if i!='']
+
+# Get cities from geonames
+df_cities = pd.read_csv('https://download.geonames.org/export/dump/cities500.zip',
+                          sep="\t", header=0, names=col_cities)
+
+# Get states from geonames
+df_states = pd.read_csv('https://download.geonames.org/export/dump/admin1CodesASCII.txt',
+                        sep="\t", header=0, names=col_admin1)
+df_states['feature code'] = 'ADM1'
+new = df_states["code"].str.split(".",expand=True)
+df_states['country code'] = new[0]
+df_states['admin1 code'] = new[1]
+df_states.drop(columns='code')
+df_states.rename(columns={'name ascii': 'asciiname'},
+                 inplace=True)
+
+# Get countries from geonames
+startline = grep(geonames_countryInfo, '^#ISO', linenum=True)[0]
+df_countries = pd.read_csv(geonames_countryInfo,
+                        sep="\t", header=startline)
+df_countries['feature code'] = 'PCL'
+df_countries.rename(columns={'#ISO': 'country code',
+                             'Country': 'asciiname',
+                             'Population': 'population'},
+                    inplace=True)
+
+dict_country_codes = dict(zip(df_countries['country code'],df_countries['asciiname'].str.lower()))
+dict_countries = dict(zip(df_countries['asciiname'].str.lower(),df_countries['country code']))
+
+# Merge df_cities,df_countries,df_states (merge by common column names)
+df_geonames = pd.concat([df_cities,df_countries,df_states], sort=False)
+df_geonames.reset_index(inplace=True, drop=True)
+df_geonames['place'] = (df_geonames.asciiname.fillna('') + ',' +
+                        df_geonames.name.fillna('') + ',' +
+                        df_geonames.alternatenames.fillna(''))
+
+# Set hierarchy order by city sizes
+# https://www.geonames.org/export/codes.html
+hierarchy = {
+'PCL': 1,
+'ADM1': 2,
+'PPLA': 2,
+'ADM2': 3,
+'PPLA2': 3,
+'PPLC': 4,
+'PPLG': 5,
+'PPL': 9,
+'PPLX': 10}
+
+df_geonames['hierarchy'] = df_geonames["feature code"].replace(hierarchy)
 
 
-# Nonsensical places to exclude from search
+### Get emoji flags
+#https://unicode.org/Public/emoji/13.0/emoji-test.txt
+#https://apps.timwhitlock.info/emoji/tables/iso3166
+with open('data/emoji_flags.txt','r') as f:
+    emoji_flags = set(f.read().splitlines())
+
+
+### Nonsensical places to exclude from search
 excluded_places = ['',' ','none','\n', '\\n','europe','planet earth',
                    'everywhere','nowhere','somewhere','anywhere','partout','nearby','remote',
                    'anywhere but here','social distancing',
@@ -66,9 +139,12 @@ excluded_places = ['',' ','none','\n', '\\n','europe','planet earth',
 # ensure lowercase
 excluded_places = [i.lower() for i in excluded_places]
 
+
+### blacklist to exclude as regex pattern
 blacklist_regex = r'world|planet|universe|global|earth|internet|retweets|somewhere|border|home|^[0-9.]+$|^ÜT:|🌎|🌍|🌏|☁️|🌙|🏡|✈|➡|🏳️|⭕|🌐|👽|\s|heaven|^www.|.com$|^http[s]*:/[/w]+|unknown|reality|¯\_(ツ)_/¯'
 
-# remap problematic names to known ones
+
+### remap problematic names to known ones
 remap_dict = {
 'america' : 'us',
 'north america' : 'us',
@@ -117,11 +193,12 @@ remap_dict = {
 'socal': 'los angeles',
 'so cal': 'los angeles',
 'southern california': 'los angeles',
-'the bay': 'san francisco bay area',
-'norcal': 'san francisco bay area',
-'northern california': 'san francisco bay area',
-'east bay, ca': 'san francisco bay area',
-'sf bay area': 'san francisco bay area',
+'the bay': 'san francisco',
+'norcal': 'san francisco',
+'northern california': 'san francisco',
+'east bay, ca': 'san francisco',
+'sf bay area': 'san francisco',
+'san francisco bay area': 'san francisco',
 'sf': 'san francisco',
 'silicon valley': 'san jose ca',
 'california usa 🇺🇸':'california',
@@ -211,6 +288,7 @@ remap_dict = {
 'canada 🇨🇦':'canada',
 '🇨🇦https://www.healthangel999.com/  great leader =great doctor of a nation! =healthy world builder!':'canada',
 'victoria🇦':'victoria bc canada',
+'bengaluru south, india' : 'bengaluru india',
 'ce':'sri lanka',
 'bh': 'bahrain',
 'rs': 'serbia',
@@ -218,14 +296,32 @@ remap_dict = {
 'bonny  in  rivers  state': 'bonny, nigeria'
 }
 
+
+# Frequent country strings that just don't map well unless handcoded to ISO2
 countries = {
 'uk':'GB',
 'brasil':'BR',
 'usa' : 'US',
 'united states of america' : 'US',
-'republic of paraguay': 'PY'
+'estados unidos':  'US',
+'republic of paraguay': 'PY',
+'españa': 'ES',
+'türkiye': 'TR',
+'deutschland': 'DE',
+'república dominicana': 'DO',
+'méxico': 'MX',
+'belgië': 'BE',
+'belgique': 'BE',
+'netherland': 'NL',
+'the netherlands' : 'NL',
+'österreich' : 'AT',
+'kingdom of saudi arabia': 'SA',
+"côte d'ivoire" : 'CI'
 }
 
+set_countries = {i.lower().strip() for i in set(dict_countries).union(countries)}
+
+# https://gist.github.com/rogerallen/1583593
 us_state_abbrev = {
     'Alabama': 'AL',
     'Alaska': 'AK',
@@ -287,56 +383,3 @@ us_state_abbrev = {
 
 # thank you to @kinghelix and @trevormarburger for this idea
 abbrev_us_state = dict(map(reversed, us_state_abbrev.items()))
-
-
-#https://unicode.org/Public/emoji/13.0/emoji-test.txt
-#https://apps.timwhitlock.info/emoji/tables/iso3166
-with open('data/emoji_flags.txt','r') as f:
-    emoji_flags = set(f.read().splitlines())
-
-# get countries from their ISO2 codes
-dict_country_codes = {i.alpha_2:i.name.lower() for i in pycountry.countries}
-# reverse dict_countries
-dict_countries = {v: k for k, v in dict_country_codes.items()}
-
-def get_states(country_code):
-    if len(country_code)!=2:
-        country_code = pycountry.countries.search_fuzzy(country_code)[0].alpha_2
-    nested_list = [[i.code.split('-')[-1], i.name, i.type] for i in pycountry.subdivisions.get(country_code=country_code)]
-    df_state = pd.DataFrame(nested_list, columns=['code','name','type']).sort_values('code')
-    df_state.reset_index(drop=True,inplace=True)
-    return df_state
-
-# get states
-# get_states('england')
-
-
-# get cities from geonames mapping tables
-df_geonames = pd.read_csv('data/cities500.txt',sep="\t")
-df_geonames['place'] = df_geonames.asciiname + ',' + df_geonames.name + ',' + df_geonames.alternatenames
-
-
-
-# simstring is much 10x faster than fuzzywuzzy but worse metrics
-def top_simstring(x, pattern, threshold=0.5):
-    db = DictDatabase(CharacterNgramFeatureExtractor(10))
-    try:
-        choices = x.lower().split(",")
-        for c in choices:
-            db.add(c)
-        searcher = Searcher(db, CosineMeasure())
-        score, best_match = searcher.ranked_search(pattern, alpha=threshold)[0]
-        return score
-    except:
-        return None
-
-
-def get_fuzz_ratio(x, pattern='San Julia'):
-    try:
-        choices = x.lower().split(",")
-        best_match, score = process.extractOne(pattern, choices)
-        return score
-    except:
-        return None
-
-
