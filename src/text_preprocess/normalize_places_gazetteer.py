@@ -89,16 +89,20 @@ with io.open(loc_unmatched_outfiled, "w", encoding='UTF-8') as fw_no:
 
 #dict_geonameid = {}
 #set_no_geonameid = set()
-for k in dict_synonymns.keys():
+synomyms_key_list = list(dict_synonymns.keys())
+startID = [i for i,key in enumerate(synomyms_key_list) if key == k][0]
+
+#for k in dict_synonymns.keys():
+for k in synomyms_key_list[startID:]:
     df_geonames['score'] = np.nan   #reset scores
     state_code = None
     l = k.split(",")
     city = re.sub('^\s+|\s+$|\)|\(','',l[0])
     country = re.sub('^\s+|\s+$|\)|\(','',l[-1])
 #    country = l[-1].strip() if len(l)==2 else None
-    if country in set_countries:
+    if country in dict_countries:
         # match country
-        country_code = dict_countries.get(country) or countries.get(country)
+        country_code = dict_countries.get(country)
         match_country = (df_geonames['country code'] == country_code)
     else:
         #not country, so match to state or region instead
@@ -123,7 +127,7 @@ for k in dict_synonymns.keys():
             #country is already a state code e.g. 'CT'
             state_code = country.upper()
         if state_code is not None:
-            match_country = ((df_geonames.place.str.contains(country, case=False, na=False)) |
+            match_country = ((df_geonames.place.str.contains(country, case=False, na=False, regex=False)) |
                              (df_geonames['admin1 code'].str.upper() == state_code))
         else: #no valid state code
              match_country = df_geonames.index
