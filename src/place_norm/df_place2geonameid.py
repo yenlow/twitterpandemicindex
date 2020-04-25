@@ -16,8 +16,9 @@ pd.set_option('display.max_columns', 100)
 pd.set_option('display.width', None)
 pd.set_option('display.max_colwidth', None)
 
-output_suffix = '20200424_235625'
-loc_mappings = f'data/locations_mapping_{output_suffix}.tsv'
+#output_suffix = '20200424_235625'
+#loc_mappings = f'data/locations_mapping_{output_suffix}.tsv'
+loc_mappings = 'data/locations_mapping.tsv'
 
 out_tsv = 'data/df_place2geonameid.tsv'
 out_pkl = 'data/df_place2geonameid.pkl'
@@ -27,7 +28,7 @@ df_mapped = pd.read_csv(loc_mappings, sep="\t")
 
 # load dict_synonymns of case/punctuation variants
 # mostly lexical variants from lower().strip and then re.sub('\.','')
-with open('../../data/dict_synonymns.pkl', 'rb') as f:
+with open('data/dict_synonymns.pkl', 'rb') as f:
     dict_synonymns = pickle.load(f)
 dict_synonymns['us']
 
@@ -58,9 +59,14 @@ def fn(x):
     return x.place_norm.union(s)
 
 df_place2geonameid['synonyms'] = df_place2geonameid.apply(fn, axis=1)
+df_place2geonameid.rename(columns={'place_norm':'place_queried'}, inplace=True)
+df_place2geonameid.drop(columns=['lexical_variants','place'],inplace=True)
 
-df_place2geonameid.drop(columns=['place_norm','lexical_variants','place'],inplace=True)
+df_place2geonameid = df_place2geonameid[['asciiname','country code',
+                                         'place_queried','geonameid',
+                                        'hierarchy','feature code','latitude','longitude',
+                                        'admin1 code', 'admin2 code','population','synonyms']]
 
 # save df_place2geonameid
 df_place2geonameid.to_pickle(out_pkl)
-df_place2geonameid.to_csv(out_tsv, sep="\t")
+df_place2geonameid.to_csv(out_tsv, sep="\t", index=False)
