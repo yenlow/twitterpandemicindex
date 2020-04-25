@@ -1,8 +1,7 @@
 # Load geonames, emoji flags tables and hardcode dictionaries for mapping places to known names
 
-import pandas as pd
 from utils.utils import *
-from utils.utils_places import *
+from place_norm.utils_places import *
 
 print("Loading geonames dataframes and dictionaries...")
 
@@ -86,41 +85,43 @@ df_geonames['hierarchy'] = df_geonames["feature code"].replace(hierarchy)
 ### Get emoji flags
 #https://unicode.org/Public/emoji/13.0/emoji-test.txt
 #https://apps.timwhitlock.info/emoji/tables/iso3166
-with open('data/emoji_flags.txt','r') as f:
+with open('../../data/emoji_flags.txt', 'r') as f:
     emoji_flags = set(f.read().splitlines())
 
 
 ### Nonsensical places to exclude from search
 excluded_places = ['',' ','none','\n', '\\n','europe','planet earth',
-                   'everywhere','nowhere','somewhere','anywhere','partout','nearby','remote',
+                   'everywhere','nowhere','somewhere','anywhere','elsewhere','knowhere',
+                   'partout','nearby','remote','dystopia','utopia','matrix','nomadic',
                    'anywhere but here','social distancing',
                    'here and there', 'here & there', 'here & now','neither here nor there',
                    'here, there and everywhere','here', 'there', 'here.',
                    'all over','all over the place','in the mountains','the swamp',
                    'in my head','in your head','in your heart','in my heart','in my mind','in your mind',
-                   'the future','the past','history','五大訴求 缺一不可',
+                   'the future','the past','history','五大訴求 缺一不可','dreamland','chernobyl',
                    'right here, right now', 'inside','outside','bed','some place',
                    'climbing out of an oubliette','c-137','no','yes','maybe',
                    'gotham','gotham city','gaia','i sây','mysoul','dm04','mother earth',
                    'loading...','visit our dedicated website @','nationwide',
                    'narnia','basement','neverland','reality','oz','whoville','hogwarts',
-                   'closet','east coast!','in the 6','idk','winterfell',
-                   'in transit','in limbo','purgatory','word','milky way',
+                   'closet','east coast!','in the 6','idk','winterfell','wonderland',
+                   'in transit','in limbo','purgatory','word','milky way','dreamville',
                    'behind you',"i'm right here",'in rubber forever',
                    'hell','heaven','international','internacional',
                    'space','universe','multiverse','the multiverse','🌈','pangea','📍',
                    'pluto','mars','mercury','venus','jupiter','uranus','saturn','neptune',
-                   'worldwide','global','world', 'world wide', 'princess park','wakanda',
+                   'worldwide','global','world', 'world wide', 'cyberspace',
+                   'princess park','wakanda','prison','gryffindor','variable',
                    'planeta tierra','the upside down','airstrip one','sant esteve de les roures',
                    'doctor gonzalez','rj','rva','nrw','sp','jvm','phl','e','x','ici','rdc','a','u','upd',
                    'lost','omnipresent','ask why?','#a2znews_org',
-                   'he/she','she/her','they/them','she/they','he/they',
+                   'he/she','she/her','she/her.','they/them','she/they','he/they','he/him',
                    '♡','❤','?','???','🪐','shhhh','facebook: baenegocios',
-                   'internet','jdsupra.com','online','twitter','linkedin',
-                   'iphone: 0.000000,0.000000','facebook','google','youtube',
-                   'sun','moon','star','galaxy',
+                   'internet','jdsupra.com','online','twitter','linkedin','linkedin:',
+                   'iphone: 0.000000,0.000000','facebook','google','youtube','telegram',
+                   'sun','moon','star','galaxy','tinyurl','blockchain',
                    'zion','paradise','eden','the void','shangri-la','in the land of nod',
-                   'the world', 'rock planet','around the world','地球',
+                   'the world', 'rock planet','around the world','地球','世界中','世界',
                    '.','..','...','....','home','127.0.0.1','wherever threads are written..',
                    'world wide web','www','/dev/null', '-','word wide',
                    'eu','latinoamérica','latam','latin america','south america','latinoam√©rica unida','latinoamerica',
@@ -129,25 +130,28 @@ excluded_places = ['',' ','none','\n', '\\n','europe','planet earth',
                    'rome *** world *** 🇨🇦🏂⚡',
                    '#genève #geneva 🇨🇭 or #japan','madrid & seoul',
                    'asia','asia | australia - pacific','antartica','africa','africa.',
-                   'uk, usa, jamaica and nigeria', 'w.h.o.',
+                   'uk, usa, jamaica and nigeria', 'w.h.o.', 'himalaya','isolation',
                    "rt's are fyi purposes only",'wealth building newsletter',
-                   'moderador(@)elconfidencial.com','witness protection',
-                   'primarily over at gab for now: https://gab.ai/overthemoonbat',
-                   '*rts are not endorsements*','en todas partes',
+                   'moderador(@)elconfidencial.com','witness protection', 'believeland',
+                   'primarily over at gab for now: https://gab.ai/overthemoonbat', 'depression',
+                   '*rts are not endorsements*','en todas partes','*','🌴', 'überall.', 'benelux',
                    'retweets/likes does not equal','𝐇𝐞𝐚𝐫𝐭 𝐨𝐟 𝐭𝐡𝐞 𝐑𝐞𝐛𝐞𝐥𝐥𝐢𝐨𝐧','¯\_(ツ)_/¯',
+                   'simulation','grounded','happyville','sadness','euphoria','$$$',
                    "s,dÁyes. unceded tsawout, tsawwassen, stz'uminus, penelakut lands (bc, canada) | cayuse, umatilla, walla walla, nimíipuu lands (oregon)"]
 # ensure lowercase
 excluded_places = [i.lower() for i in excluded_places]
 
 
 ### blacklist to exclude as regex pattern
-blacklist_regex = r'world|planet|universe|global|earth|internet|retweets|somewhere|border|home|^[0-9.]+$|^ÜT:|🌎|🌍|🌏|☁️|🌙|🏡|✈|➡|🏳️|⭕|🌐|👽|\s|heaven|^www.|.com$|^http[s]*:/[/w]+|unknown|reality|¯\_(ツ)_/¯'
+blacklist_regex = r'world|planet|universe|global|instagram|earth|internet|retweets|website|somewhere|border|home|^[0-9.]+$|^ÜT:|🌎|🌍|🌏|☁️|🌙|🏡|✈|➡|🏳️|⭕|🌐|👽|\s|heaven|^www.|.com$|^http[s]*:/[/w]+|unknown|reality|¯\_(ツ)_/¯'
 
 
 ### remap problematic names to known ones
 remap_dict = {
 'america' : 'us',
 'north america' : 'us',
+'heartland,usa' :'us',
+'trumpland' :'us',
 '#dv #csa  #daniel_morgan': 'us',
 'end citizens united': 'us',
 'text resist to 50409': 'us',
@@ -246,8 +250,10 @@ remap_dict = {
 'mexico df':'mexico city, mexico',
 'mexico d.f.':'mexico city, mexico',
 'caracas venuzuela':'caracas, venezuela',
+'caracas-venezuela':'caracas, venezuela',
 'caracas - venezuela':'caracas, venezuela',
 'caracas, distrito capital': 'caracas, venuzuela',
+'bogotá-colombia': 'bogotá, colombia',
 'bogotá d.c.': 'bogotá, colombia',
 'guayaquil-ecuador':'guayaquil, ecuador',
 'rio grande do sul brazil': 'rio grande do sul, brazil',
@@ -276,10 +282,12 @@ remap_dict = {
 'república de catalunya' : 'catalonia, spain',
 'rep√∫blica de catalunya': 'catalonia, spain',
 'rep√∫blica catalana': 'catalonia, spain',
+'madrid-españa': 'madrid, spain',
 'comunidad de madrid, españa': 'madrid, spain',
 'mallorca':'mallorca, spain',
 'kashmir': 'kashmir, india',
 'south asia':'india',
+'india🇮🇳':'india',
 'ncr':'india',
 'bengaluru south, india' : 'bengaluru, india',
 'bengaluru india' : 'bengaluru, india',
@@ -317,7 +325,8 @@ remap_dict = {
 'bh': 'bahrain',
 'rs': 'serbia',
 'pr': 'puerto rico',
-'bonny  in  rivers  state': 'bonny, nigeria'
+'bonny  in  rivers  state': 'bonny, nigeria',
+'kenya-nairobi': 'nairobi, kenya'
 }
 
 
@@ -348,7 +357,7 @@ countries = {
 
 # read in country synonymns
 # generated from join_countries.sh
-df_countries_alt = pd.read_csv('data/country_synonymns.txt',sep="\t")
+df_countries_alt = pd.read_csv('../../data/country_synonymns.txt', sep="\t")
 
 for k,v in countries.items():
     dict_countries[k] = v

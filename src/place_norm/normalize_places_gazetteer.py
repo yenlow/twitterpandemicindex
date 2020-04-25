@@ -14,17 +14,16 @@
 # C. Speed up #2 with spacy NER
 
 
-import pandas as pd
 import numpy as np
 import geocoder, re, io, pickle
 from flag import dflagize
-from fuzzywuzzy import fuzz, process
-from utils.utils_places import *
-from time import time
+from fuzzywuzzy import fuzz
+from place_norm.utils_places import *
+from datetime import datetime
 
 # import mapping tables
-from text_preprocess.dict_places import df_geonames, df_states, dict_country_codes, dict_countries, emoji_flags, \
-    excluded_places, blacklist_regex, remap_dict, countries, set_countries
+from place_norm.dict_places import df_geonames, df_states, dict_country_codes, dict_countries, emoji_flags, \
+    excluded_places, blacklist_regex, remap_dict
 
 pd.set_option('display.max_columns', 100)
 pd.set_option('display.width', None)
@@ -32,9 +31,11 @@ pd.set_option('display.max_colwidth', None)
 #pd.set_option('display.max_rows', 300)
 
 # Set params
-unnormalized_loc_file = 'data/locations_clean_user_location.tsv'
-loc_mappings_outfile = 'data/locations_mapping.tsv'
-loc_unmatched_outfiled = 'data/locations_unmapped.tsv'
+output_suffix = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+
+unnormalized_loc_file = '../../data/locations_clean_user_location.tsv'
+loc_mappings_outfile = f'data/locations_mapping_{output_suffix}.tsv'
+loc_unmatched_outfiled = f'data/locations_unmapped_{output_suffix}.tsv'
 
 threshold = 0.5
 col_geonames_desired = ['asciiname','country code','geonameid','hierarchy','feature code','latitude','longitude','admin1 code', 'admin2 code','population','place']
@@ -52,22 +53,23 @@ with open(unnormalized_loc_file, newline='\n') as fr:
 
     for line in fr:
         place_ori = line.split('\t')[0]
-        place = place_ori.strip().lower()
+        place = re.sub('\.','',place_ori.strip().lower())
         # convert flag emojis to country names
         if place in emoji_flags:
             country = dict_country_codes.get(dflagize(place)[1:3])
             if country:
                 dict_synonymns.setdefault(country,[]).append(place_ori)
         # skip names in blacklist_regex or excluded_places
-        elif not re.match(blacklist_regex, place) and place not in excluded_places:
+        elif ((not re.search(blacklist_regex, place)) and (place not in excluded_places)):
             if place in remap_dict:
                 dict_synonymns.setdefault(remap_dict[place],[]).append(place_ori)
             else:
                 dict_synonymns.setdefault(place,[]).append(place_ori)
 
+len(dict_synonymns)  #175839
 
 # save dict_synonymns
-with open(f'data/dict_synonymns.pkl', 'wb') as f:
+with open('../../data/dict_synonymns.pkl', 'wb') as f:
     pickle.dump(dict_synonymns, f)
 f.close()
 
@@ -89,11 +91,13 @@ with io.open(loc_unmatched_outfiled, "w", encoding='UTF-8') as fw_no:
 
 #dict_geonameid = {}
 #set_no_geonameid = set()
-synomyms_key_list = list(dict_synonymns.keys())
-startID = [i for i,key in enumerate(synomyms_key_list) if key == k][0]
 
-#for k in dict_synonymns.keys():
-for k in synomyms_key_list[startID:]:
+#synomyms_key_list = list(dict_synonymns.keys())
+#startID = [i for i,key in enumerate(synomyms_key_list) if key == k][0]
+#startID=58549
+#for k in synomyms_key_list[startID:]:
+
+for k in dict_synonymns.keys():
     df_geonames['score'] = np.nan   #reset scores
     state_code = None
     l = k.split(",")
@@ -158,6 +162,8 @@ for k in synomyms_key_list[startID:]:
             fw_no.write(f"{k}\n")
 #        dict_geonameid[k] = None
 #        set_no_geonameid.add(k)
+
+
 
 #103s for 500 or 2.4 days for 1mil using str.contains (12% unmatched)
 #93s for 500 or 2.2 days for 1mil using fuzz.ratio (5% unmatched)

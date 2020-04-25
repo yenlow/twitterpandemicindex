@@ -1,11 +1,10 @@
 # Code to normalize places using geocoder
 # https://github.com/DenisCarriere/geocoder/blob/master/README.md
 
-import pandas as pd
 from itertools import islice
-import geocoder, re, io
+import geocoder, io
 from country_converter import CountryConverter
-from text_preprocess.dict_places import *
+from place_norm.dict_places import *
 from api.config import mapquest_api
 from flag import dflagize
 
@@ -13,7 +12,7 @@ pd.set_option('display.max_columns', 100)
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_rows', 300)
 
-unnormalized_loc_file = 'data/locations_clean_user_location.tsv'
+unnormalized_loc_file = '../../data/locations_clean_user_location.tsv'
 loc_mappings_outfile = 'data/locations_mapping.tsv'
 
 colnames = ['place_norm','type','country_code','state','county','city', 'latitude','longitude']
@@ -23,9 +22,25 @@ col_order = ['place_original','place_queried'] + colnames
 mapquest_key = mapquest_api()
 cc = CountryConverter()
 
-🏴‍☠️
-🏴‍☠️
-🏴‍☠
+
+
+
+loc_mappings = f'data/locations_mapping_{output_suffix}.tsv'
+
+pd.readcsv()
+
+with open(loc_mappings, newline='\n') as fr:
+    next(fr) #skip header line
+    # 1. Normalize synonyms into dict_synonymns = {place_norm:[synonyms]}
+
+    for line in fr:
+        place_ori = line.split('\t')[0]
+        place = re.sub('\.','',place_ori.strip().lower())
+
+
+
+
+
 
 places_output = []
 with io.open(loc_mappings_outfile, "w", encoding='UTF-8') as fw:
