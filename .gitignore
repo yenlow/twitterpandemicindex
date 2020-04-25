@@ -11,6 +11,8 @@ data/*.csv
 data/*.txt
 data/*.tsv
 data/*.parquet
+!data/dict_emoji_flags.txt
+!data/country_synonymns.txt
 !data/df_stream_sample.txt
 !data/df_tweets_sample.txt
 !data/df_place2geonameid.pkl
