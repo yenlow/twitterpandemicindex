@@ -16,9 +16,12 @@ data/*.parquet
 !data/df_tweets_sample.txt
 !data/df_place2geonameid.pkl
 !data/df_place2geonameid.tsv
-!data/df_tweets_sample.txt
 !data/locations_mapping.tsv
 !data/locations_unmapped.tsv
+!data/df_place2geonameid.pkl
+!data/df_place2geonameid.tsv
+!data/df_api2geonameid.pkl
+!data/df_api2geonameid.tsv
 text_preprocess/tweetstream_txt.py
 output/*
 !output/20200421_191436/
