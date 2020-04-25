@@ -74,6 +74,8 @@ hierarchy = {
 'PPLA': 2,
 'ADM2': 3,
 'PPLA2': 3,
+'PPLA3': 5,
+'PPLA4': 6,
 'PPLC': 4,
 'PPLG': 5,
 'PPL': 9,
@@ -85,15 +87,15 @@ df_geonames['hierarchy'] = df_geonames["feature code"].replace(hierarchy)
 ### Get emoji flags
 #https://unicode.org/Public/emoji/13.0/emoji-test.txt
 #https://apps.timwhitlock.info/emoji/tables/iso3166
-with open('../../data/emoji_flags.txt', 'r') as f:
+with open('data/emoji_flags.txt', 'r') as f:
     emoji_flags = set(f.read().splitlines())
 
 
 ### Nonsensical places to exclude from search
-excluded_places = ['',' ','none','\n', '\\n','europe','planet earth',
+excluded_places = {'',' ','none','\n', '\\n','europe','planet earth',
                    'everywhere','nowhere','somewhere','anywhere','elsewhere','knowhere',
                    'partout','nearby','remote','dystopia','utopia','matrix','nomadic',
-                   'anywhere but here','social distancing',
+                   'anywhere but here','social distancing','around','mordor','gallifrey',
                    'here and there', 'here & there', 'here & now','neither here nor there',
                    'here, there and everywhere','here', 'there', 'here.',
                    'all over','all over the place','in the mountains','the swamp',
@@ -104,51 +106,53 @@ excluded_places = ['',' ','none','\n', '\\n','europe','planet earth',
                    'gotham','gotham city','gaia','i sây','mysoul','dm04','mother earth',
                    'loading...','visit our dedicated website @','nationwide',
                    'narnia','basement','neverland','reality','oz','whoville','hogwarts',
-                   'closet','east coast!','in the 6','idk','winterfell','wonderland',
+                   'closet','east coast!','in the 6','idk',"valyria",'classified',
+                   'winterfell','wonderland','westeros',"king's landing", "king landing", "kings landing",
                    'in transit','in limbo','purgatory','word','milky way','dreamville',
-                   'behind you',"i'm right here",'in rubber forever',
-                   'hell','heaven','international','internacional',
+                   'behind you',"i'm right here",'in rubber forever','thinkstan',
+                   'hell','heaven','international','internacional','愛知県一宮市',
                    'space','universe','multiverse','the multiverse','🌈','pangea','📍',
                    'pluto','mars','mercury','venus','jupiter','uranus','saturn','neptune',
                    'worldwide','global','world', 'world wide', 'cyberspace',
                    'princess park','wakanda','prison','gryffindor','variable',
                    'planeta tierra','the upside down','airstrip one','sant esteve de les roures',
                    'doctor gonzalez','rj','rva','nrw','sp','jvm','phl','e','x','ici','rdc','a','u','upd',
-                   'lost','omnipresent','ask why?','#a2znews_org',
-                   'he/she','she/her','she/her.','they/them','she/they','he/they','he/him',
-                   '♡','❤','?','???','🪐','shhhh','facebook: baenegocios',
+                   'lost','omnipresent','ask why?','#a2znews_org','azania','nunya','murrayland',
+                   'he/she','she/her','she/her.','they/them','she/they','he/they','he/him','ela/dela',
+                   '♡','❤','?','???','🪐','shhhh','facebook: baenegocios','progressiveland',
                    'internet','jdsupra.com','online','twitter','linkedin','linkedin:',
                    'iphone: 0.000000,0.000000','facebook','google','youtube','telegram',
                    'sun','moon','star','galaxy','tinyurl','blockchain',
                    'zion','paradise','eden','the void','shangri-la','in the land of nod',
                    'the world', 'rock planet','around the world','地球','世界中','世界',
                    '.','..','...','....','home','127.0.0.1','wherever threads are written..',
-                   'world wide web','www','/dev/null', '-','word wide',
+                   'world wide web','www','/dev/null', '-','word wide','undisclosed',
                    'eu','latinoamérica','latam','latin america','south america','latinoam√©rica unida','latinoamerica',
                    '🇪🇺','🇫🇷 / 🇩🇪','europe','european union 🇪🇺','se asia','#AFRICA #MENA',
                    'usa | uk | asia | australia','far east','#per√∫ / europa / #asia / latam','am√©rica latina',
-                   'rome *** world *** 🇨🇦🏂⚡',
-                   '#genève #geneva 🇨🇭 or #japan','madrid & seoul',
+                   'rome *** world *** 🇨🇦🏂⚡','tabarnia','afrique',
+                   '#genève #geneva 🇨🇭 or #japan','madrid & seoul','chetoslovaquia',
                    'asia','asia | australia - pacific','antartica','africa','africa.',
                    'uk, usa, jamaica and nigeria', 'w.h.o.', 'himalaya','isolation',
-                   "rt's are fyi purposes only",'wealth building newsletter',
-                   'moderador(@)elconfidencial.com','witness protection', 'believeland',
+                   "rt's are fyi purposes only",'wealth building newsletter','kekistan',
+                   'moderador(@)elconfidencial.com','witness protection', 'believeland','tatooine',
                    'primarily over at gab for now: https://gab.ai/overthemoonbat', 'depression',
                    '*rts are not endorsements*','en todas partes','*','🌴', 'überall.', 'benelux',
                    'retweets/likes does not equal','𝐇𝐞𝐚𝐫𝐭 𝐨𝐟 𝐭𝐡𝐞 𝐑𝐞𝐛𝐞𝐥𝐥𝐢𝐨𝐧','¯\_(ツ)_/¯',
                    'simulation','grounded','happyville','sadness','euphoria','$$$',
-                   "s,dÁyes. unceded tsawout, tsawwassen, stz'uminus, penelakut lands (bc, canada) | cayuse, umatilla, walla walla, nimíipuu lands (oregon)"]
+                   "s,dÁyes. unceded tsawout, tsawwassen, stz'uminus, penelakut lands (bc, canada) | cayuse, umatilla, walla walla, nimíipuu lands (oregon)"}
 # ensure lowercase
 excluded_places = [i.lower() for i in excluded_places]
 
 
 ### blacklist to exclude as regex pattern
-blacklist_regex = r'world|planet|universe|global|instagram|earth|internet|retweets|website|somewhere|border|home|^[0-9.]+$|^ÜT:|🌎|🌍|🌏|☁️|🌙|🏡|✈|➡|🏳️|⭕|🌐|👽|\s|heaven|^www.|.com$|^http[s]*:/[/w]+|unknown|reality|¯\_(ツ)_/¯'
+blacklist_regex = r'-*[0-9|\.]+[,|-]+[0-9|\.]+$|world|planet|universe|global|instagram|various|earth|internet|retweets|website|somewhere|border|home|^[0-9.]+$|^ÜT:|🌎|🌍|🌏|☁️|🌙|🏡|✈|➡|🏳️|⭕|🌐|👽|\s|heaven|^www.|.com$|^http[s]*:/[/w]+|unknown|reality|¯\_(ツ)_/¯'
 
 
 ### remap problematic names to known ones
 remap_dict = {
 'america' : 'us',
+"'merica":'us',
 'north america' : 'us',
 'heartland,usa' :'us',
 'trumpland' :'us',
@@ -189,6 +193,7 @@ remap_dict = {
 'atx': 'austin tx',
 'satx': 'san antonio tx',
 'kc':'kansas city',
+'kcmo':'kansas city, mo',
 '√α. в૯α૮ђ, √¡૨g¡ท¡α': 'virgina beach, va',
 'va beach, virginia': 'virgina beach, va',
 'nyc↔#longisland-atlantic~~': 'new york, us',
@@ -219,6 +224,7 @@ remap_dict = {
 'pnw': 'wa, us',
 'washington state': 'wa, us',
 'olympia wa' : 'olympia, us',
+'seatttle':'seattle, us',
 'dmv (d.c., maryland, virginia)': 'washington dc, us',
 'dmv': 'washington dc, us',
 'd(m)v': 'washington dc, us',
@@ -275,6 +281,7 @@ remap_dict = {
 'москва, россия':'moscow, russia',
 'al shuwaikh, kuwait tel +965 22271800': 'kuwait',
 '🅔🅤🅡🅞🅟🅔 - 🅢🅟🅐🅘🅝': 'spain',
+'𝑬𝒖𝒔𝒌𝒂𝒅𝒊':'basque country, spain',
 'barcelona, catalunya': 'barcelona, spain',
 'barcelona, cataluña': 'barcelona, spain',
 'barcelona, catalana': 'barcelona, spain',
@@ -352,12 +359,14 @@ countries = {
 'kingdom of saudi arabia': 'SA',
 "côte d'ivoire" : 'CI',
 'republic of korea': 'KR',
-'sverige':'SE'
+'sverige':'SE',
+'indonesiaraya':'ID',
+'phillipines':'PH'
 }
 
 # read in country synonymns
 # generated from join_countries.sh
-df_countries_alt = pd.read_csv('../../data/country_synonymns.txt', sep="\t")
+df_countries_alt = pd.read_csv('data/country_synonymns.txt', sep="\t")
 
 for k,v in countries.items():
     dict_countries[k] = v
@@ -424,7 +433,8 @@ us_state_abbrev = {
     'Washington': 'WA',
     'West Virginia': 'WV',
     'Wisconsin': 'WI',
-    'Wyoming': 'WY'
+    'Wyoming': 'WY',
+    'bharatavarsha': 'IN'
 }
 
 # thank you to @kinghelix and @trevormarburger for this idea

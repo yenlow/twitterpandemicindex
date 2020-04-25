@@ -1,15 +1,19 @@
-# Tiered approach for place normalization
-# 1. Normalize freq places (lower, strip, dict) -> dict_synonymns
+# First 2 steps of Tiered approach for place normalization
+# 1. Normalize freq places (lower, strip, re.sub('\.',''), dict) -> dict_synonymns
+#    => 1M lexical variants -> 100K names
 # 2. To the normalized names in dict_synonymns, look up geonames cities500
+#    augmented with states, countries and country language variants
 #    3 options for string search:
 #    a) pd.str.contains is fastest but does not allow fuzzy matching (21% unmatched)
 #    b) top_simstring is 10x faster get_fuzz_ratio but misses 50% more hits
 #    c) get_fuzz_ratio is too slow to be tenable!
+# String search speed has been improved by hierarchy search by country/state first then city
 # 3. Call mapquest API on the difficult ones (15K per API) - need for 200K places
+#    See normalize_places_mapquest.py
 # 4. Create giant mapping table between original places and geonameid/normalized place
+#    See df_place2geonameid.py
 #
 # TODOS:
-# A. Do step 4
 # B. Get more APIs (mapquest, geonames, google) and keys
 # C. Speed up #2 with spacy NER
 
@@ -40,11 +44,6 @@ loc_unmatched_outfiled = f'data/locations_unmapped_{output_suffix}.tsv'
 threshold = 0.5
 col_geonames_desired = ['asciiname','country code','geonameid','hierarchy','feature code','latitude','longitude','admin1 code', 'admin2 code','population','place']
 
-# import mapquest apis
-from api.config import mapquest_api
-mapquest_key = mapquest_api()
-
-
 # dict_synomymns has format {normalized name: [synonymns]}
 dict_synonymns = {}
 with open(unnormalized_loc_file, newline='\n') as fr:
@@ -53,7 +52,7 @@ with open(unnormalized_loc_file, newline='\n') as fr:
 
     for line in fr:
         place_ori = line.split('\t')[0]
-        place = re.sub('\.','',place_ori.strip().lower())
+        place = re.sub('\.|#|!|@','',place_ori.strip().lower())
         # convert flag emojis to country names
         if place in emoji_flags:
             country = dict_country_codes.get(dflagize(place)[1:3])
@@ -188,40 +187,3 @@ for k in dict_synonymns.keys():
 #     print("\n")
 
 
-######### Not yet tested
-# 3. Call mapquest API to query place names (up to 100 per batch)
-step=100
-list_no_geonameid = list(set_no_geonameid)
-for i in range(0,len(set_no_geonameid),step):
-    g = geocoder.mapquest(list_no_geonameid[i:i+step], method='batch', key=mapquest_key)
-
-    for i in range(len(g)):
-        result = g[i]
-
-        # Instead of inaccurate street names, use either city or country
-        place_norm = result.address
-        if result.quality=='STREET':
-            place_norm = result.city if result.city else result.country
-    #        print(f"{result.address} is now {place_norm} or {result.city}")
-        # Fix bug in mapquest: replace country_code with state if available
-        if result.quality=='STATE' and result.state!='':
-            # TODO: do the same for brazil, MX, AU, CA states
-            if result.country=='US':
-                place_norm = abbrev_us_state.get(result.state)
-    #            print(f"{result.state} is now {place_norm} or {abbrev_us_state.get(result.state)}")
-            else:
-                place_norm = result.state
-    #            print(f"{result.address} is now {place_norm} or {result.state}")
-        # Recode country code to country name to avoid ambiguity with state abbrev
-        # e.g. ID = Indonesia or Idaho
-        if result.quality=='COUNTRY' and result.address==result.country:
-            place_norm = cc.convert(result.address, to='name_short')
-    #        print(f"{result.address} is now {place_norm}")
-
-        desired_fields = [  place_norm, result.quality,
-                            result.country, result.state,
-                            result.county, result.city,
-                            str(result.lat), str(result.lng)]
-        output_line = f"{places_100_ori[i]}\t{places_100[i]}\t" + "\t".join(desired_fields) + "\n"
-        with io.open(loc_mappings_outfile, "a", encoding='utf-8') as fw:
-            fw.write(output_line)

@@ -1,25 +1,4 @@
-# Step 3 of Tiered approach for place normalization
-# 1. Normalize freq places (lower, strip, re.sub('\.',''), dict) -> dict_synonymns
-#    => 1M lexical variants -> 100K names
-# 2. To the normalized names in dict_synonymns, look up geonames cities500
-#    augmented with states, countries and country language variants
-#    3 options for string search:
-#    a) pd.str.contains is fastest but does not allow fuzzy matching (21% unmatched)
-#    b) top_simstring is 10x faster get_fuzz_ratio but misses 50% more hits
-#    c) get_fuzz_ratio is too slow to be tenable!
-# String search speed has been improved by hierarchy search by country/state first then city
-# 3. Call mapquest API on the difficult ones (15K per API) - need for 200K places
-#    See normalize_places_mapquest.py
-# 4. Create giant mapping table between original places and geonameid/normalized place
-#    See df_place2geonameid.py
-#
-# TODOS:
-# B. Get more APIs (mapquest, geonames, google) and keys
-# C. Speed up #2 with spacy NER
-#
-#
-# Based on geocoder package
-# Calls mapquest API (batch query of up to 100 places)
+# Code to normalize places using mapquest geocoding API only
 # https://github.com/DenisCarriere/geocoder/blob/master/README.md
 
 from itertools import islice
@@ -33,24 +12,20 @@ pd.set_option('display.max_columns', 100)
 pd.set_option('display.width', 1000)
 pd.set_option('display.max_rows', 300)
 
+unnormalized_loc_file = '../../data/locations_clean_user_location.tsv'
+loc_mappings_outfile = 'data/locations_mapping.tsv'
+
+colnames = ['place_norm','type','country_code','state','county','city', 'latitude','longitude']
+col_order = ['place_original','place_queried'] + colnames
+
 mapquest_key = mapquest_api()
 cc = CountryConverter()
 
-output_suffix = '20200424_235625'
-loc_unmatched = f'data/locations_unmapped_{output_suffix}_test.tsv'
-loc_api_outfile = f'data/locations_api_{output_suffix}.tsv'
-
-colnames = ['place_norm','type','country_code','state','county','city', 'latitude','longitude']
-col_order = ['place_queried'] + colnames
-
-# Write out to new file
 places_output = []
-with io.open(loc_api_outfile, "w", encoding='UTF-8') as fw:
+with io.open(loc_mappings_outfile, "w", encoding='UTF-8') as fw:
     fw.write(u"\t".join(col_order)+"\n")
 
-# Read in places unmapped by geonames
-places = []
-with open(loc_unmatched, newline='\n') as fr:
+with open(unnormalized_loc_file, newline='\n') as fr:
     next(fr) #skip header line
     while True:
         next_n_lines = list(islice(fr, 100))
@@ -58,11 +33,19 @@ with open(loc_unmatched, newline='\n') as fr:
             break
         else:
             places_100 = []
+            places_100_ori = []
             for i in next_n_lines:
-                place = i.strip("\n")
-                if ((not re.search(blacklist_regex, place)) and (place not in excluded_places)):
-                    places_100.append(place)
-                    places.append(place)
+                place_ori = i.split('\t')[0]
+                place = place_ori.strip().lower()
+                if place in emoji_flags:
+                    place_queried = cc.convert(dflagize(place)[1:3], to='name_short')
+                elif not re.match(blacklist_regex, place) and place not in excluded_places:
+                    if place in remap_dict:
+                        place_queried = remap_dict[place]
+                    else:
+                        place_queried = place
+                    places_100.append(place_queried)
+                    places_100_ori.append(place_ori)
 
             # Call mapquest API to query place names (up to 100 per batch)
             g = geocoder.mapquest(places_100, method='batch', key=mapquest_key)
@@ -94,6 +77,24 @@ with open(loc_unmatched, newline='\n') as fr:
                                     result.country, result.state,
                                     result.county, result.city,
                                     str(result.lat), str(result.lng)]
-                output_line = f"{places_100[i]}\t" + "\t".join(desired_fields) + "\n"
-                with io.open(loc_api_outfile, "a", encoding='utf-8') as fw:
+                output_line = f"{places_100_ori[i]}\t{places_100[i]}\t" + "\t".join(desired_fields) + "\n"
+                with io.open(loc_mappings_outfile, "a", encoding='utf-8') as fw:
                     fw.write(output_line)
+
+
+########### using free geonames api
+g = geocoder.geonames('Pic de Font Blanca', key='yenlow')
+#geonames
+g.geojson
+g.address       #London
+g.state         #England
+g.country       #United Kingdom
+g.country_code  #GB
+g.description   #capital of a political entity
+g.geonames_id   #2643743
+g.lat   #'51.50853'
+g.lng   #'-0.12574'
+
+g.code
+
+g = geocoder.google('Mountain View, CA')
