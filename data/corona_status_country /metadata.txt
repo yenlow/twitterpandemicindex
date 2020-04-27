@@ -21,6 +21,7 @@ Server response
 Response headers
 
  access-control-allow-origin: *  content-length: 35502  content-type: text/csv; charset=utf-8  date: Sun, 19 Apr 2020 02:02:43 GMT  etag: W/"8aae-NAbD09hC3IBh1Wg2c4y3vvldNuo"  server: openresty/1.15.8.2  strict-transport-security: max-age=15724800; includeSubDomains  x-firefox-spdy: h2  x-powered-by: Express 
+ 
 
 profileId,submissionOrder,age,sex,hasBeenTested,hasBeenInContactWithInfected,symptomStart,testResult,submissionDate,bodyTemperature,smokingHabit,isolationStatus,diagnosedWithOtherConditions,DRY_COUGH,EXHAUSTION,FEVER,HEAVY_BREATHING,MUSCLE_ACHING,DIARRHEA,HEADACHE,SORE_THROAT,NO_TASTE,NO_SMELL,SLIME_COUGH,RUNNY_NOSE,NAUSEA_OR_VOMITING
 1,1,"50 - 59","MALE",0,0,"2020-03-20",,"2020-04-05",36.5,"CURRENTLY","NOT_IN_ISOLATION",0,0,1,0,0,0,0,0,0,0,0,0,0,0
