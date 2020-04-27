@@ -1,10 +1,10 @@
 import pandas as pd
 import pycountry
 from fuzzywuzzy import process
-from simstring.feature_extractor.character_ngram import CharacterNgramFeatureExtractor
-from simstring.measure.cosine import CosineMeasure
-from simstring.database.dict import DictDatabase
-from simstring.searcher import Searcher
+# from simstring.feature_extractor.character_ngram import CharacterNgramFeatureExtractor
+# from simstring.measure.cosine import CosineMeasure
+# from simstring.database.dict import DictDatabase
+# from simstring.searcher import Searcher
 
 def fuzzy_country(country,field='alpha_2'):
     """

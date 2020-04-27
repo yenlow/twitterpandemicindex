@@ -146,7 +146,7 @@ excluded_places = [i.lower() for i in excluded_places]
 
 
 ### blacklist to exclude as regex pattern
-blacklist_regex = r'-*[0-9|\.]+[,|-]+[0-9|\.]+$|world|planet|universe|global|instagram|various|earth|internet|retweets|website|somewhere|border|home|^[0-9.]+$|^ÜT:|🌎|🌍|🌏|☁️|🌙|🏡|✈|➡|🏳️|⭕|🌐|👽|\s|heaven|^www.|.com$|^http[s]*:/[/w]+|unknown|reality|¯\_(ツ)_/¯'
+blacklist_regex = r'-*[0-9|\.]+[,|-]+[0-9|\.]+$|in a|world|planet|universe|global|instagram|various|earth|internet|retweets|website|somewhere|border|home|^[0-9.]+$|^ÜT:|🌎|🌍|🌏|☁️|🌙|🏡|✈|➡|🏳️|⭕|🌐|👽|heaven|^www.|.com$|^http[s]*:/[/w]+|unknown|reality|¯\_(ツ)_/¯'
 
 
 ### remap problematic names to known ones
