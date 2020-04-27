@@ -36,8 +36,9 @@ pd.set_option('display.max_colwidth', None)
 #pd.set_option('display.max_rows', 300)
 
 # Set params
-output_suffix = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-#output_suffix = '20200425_191348.tsv'
+#output_suffix = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+output_suffix = '20200427_170609'
+#output_suffix = '20200427_021147'
 
 unnormalized_loc_file = 'data/locations_clean_user_location.tsv'  #1144417 places
 loc_mappings_outfile = f'data/locations_mapping_{output_suffix}.tsv'
@@ -109,7 +110,7 @@ with io.open(loc_unmatched_outfiled, "w", encoding='UTF-8') as fw_no:
 #set_no_geonameid = set()
 
 for i,k in enumerate(dict_synonymns.keys()):
-    if i>700000:    #399878
+    if i>631402:    #399878, 670000
         print(i,k, end='')
         df_geonames['score'] = np.nan   #reset scores
         state_code = None

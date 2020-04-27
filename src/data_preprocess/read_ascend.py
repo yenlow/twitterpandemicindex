@@ -38,6 +38,14 @@ df_symptoms_ll.shape
 df_census_2000 = A.component2pd('COVID_19_Data_Vault','Google_Cloud','US_Census_Bureau_2000_present')
 df_census_2000.shape
 
+
+# Example 5: Read table joined in ascend
+df_daily_mobility_tweet_vol = A.component2pd('yenlow_gmail_com','test','daily_mobility_us_tweet_vol')
+df_daily_mobility_tweet_vol.shape
+df_daily_mobility_tweet_vol.to_json('data/sample_data_for_mockup.json', orient='table')
+
+
+
 # convert csv to csv/json/parquet for uploading to ascend (must be <2MB)
 csv2other('../../data/policyactions_state.csv', 'json')
 csv2other('../../data/riskpop_state.csv', 'json')
