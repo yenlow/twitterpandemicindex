@@ -11,6 +11,7 @@
 import pickle
 import pandas as pd
 from place_norm.dict_places import df_geonames
+from utils.utils import force_int_or_null
 
 pd.set_option('display.max_columns', 100)
 pd.set_option('display.width', None)
@@ -23,13 +24,11 @@ loc_mappings = 'data/locations_mapping.tsv'
 out_tsv = 'data/df_place2geonameid.tsv'
 out_pkl = 'data/df_place2geonameid.pkl'
 
-
 df_mapped = pd.read_csv(loc_mappings, sep="\t")
 
 # load dict_synonymns of case/punctuation variants
 # mostly lexical variants from lower().strip and then re.sub('\.','')
-with open('data/dict_synonymns.pkl', 'rb') as f:
-    dict_synonymns = pickle.load(f)
+dict_synonymns = pickle.load(open('data/dict_synonymns.pkl', "rb"))
 dict_synonymns['us']
 
 # save the lexical variants into a column in df_mapped (list of lexical variants)
@@ -44,12 +43,16 @@ synonyms_set = (df_mapped.groupby('geonameid')['lexical_variants'].apply(lambda 
 
 # create the grouped by df with unique geonameid
 df_mapped_set = pd.concat([place_norm_set,synonyms_set], join='outer', axis=1)
+df_mapped_set.index   #geonameid
 
 # join the mapped geonameid with df_geonames to get other geonames metadata
 col_geonames_desired = ['geonameid','asciiname','country code',
                         'hierarchy','feature code','latitude','longitude',
                         'admin1 code', 'admin2 code','population','place']
-df_place2geonameid = df_mapped_set.merge(df_geonames[col_geonames_desired], on='geonameid', how='inner')
+df_geonames.index   #doesn't need to be geonameid
+df_place2geonameid = df_mapped_set.merge(df_geonames[col_geonames_desired], on='geonameid', how='left')
+df_place2geonameid.hierarchy = df_place2geonameid.hierarchy.apply(force_int_or_null).astype('float',copy=False) #use float to allow np.nan
+
 
 # append place_norm set to places list
 def fn(x):

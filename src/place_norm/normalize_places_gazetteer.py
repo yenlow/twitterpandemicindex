@@ -74,15 +74,15 @@ with open(unnormalized_loc_file, newline='\n') as fr:
             #matched blacklist_regex, excluded list
             discarded_places.append(place)
 
-len(dict_synonymns)  #175839  (15%)  924849
-len(discarded_places) #968578 (85% discarded) 75647 (7%)
+len(dict_synonymns)  #924849
+len(discarded_places) #75647 (7%)
 
 # save dict_synonymns
 with open('data/dict_synonymns.pkl', 'wb') as f:
     pickle.dump(dict_synonymns, f)
 f.close()
 
-dict_synonymns = pickle.load(open('data/dict_synonymns.pkl', "rb"))
+#dict_synonymns = pickle.load(open('data/dict_synonymns.pkl', "rb"))
 
 #Preview dict_synonymns
 # for k,v in dict_synonymns.items():
@@ -110,7 +110,7 @@ with io.open(loc_unmatched_outfiled, "w", encoding='UTF-8') as fw_no:
 #set_no_geonameid = set()
 
 for i,k in enumerate(dict_synonymns.keys()):
-    if i>631402:    #399878, 670000
+    if i>0:    #399878, 670000
         print(i,k, end='')
         df_geonames['score'] = np.nan   #reset scores
         state_code = None

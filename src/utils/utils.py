@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from urllib.request import urlopen
 import re
 from io import BytesIO
@@ -103,4 +104,12 @@ def parse_blob(file,pattern,group=1,indiv_file=None):
     if match:
         matched_string = match.group(group)
         return matched_string
+
+
+def force_int_or_null(x):
+    try:
+        return int(x)
+    except:
+        return np.nan
+
 

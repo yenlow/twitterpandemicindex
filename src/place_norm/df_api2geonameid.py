@@ -12,13 +12,15 @@
 import pickle
 import pandas as pd
 from place_norm.dict_places import df_geonames
+from utils.utils import force_int_or_null
 
 pd.set_option('display.max_columns', 100)
 pd.set_option('display.width', None)
 pd.set_option('display.max_colwidth', None)
 
-output_suffix = '20200424_235625'
-loc_api = f'data/locations_api_{output_suffix}.tsv'
+# output_suffix = '20200424_235625'
+# loc_api = f'data/locations_api_{output_suffix}.tsv'
+loc_api = f'data/locations_api.tsv'
 
 out_tsv = 'data/df_api2geonameid.tsv'
 out_pkl = 'data/df_api2geonameid.pkl'
@@ -27,9 +29,9 @@ df_api = pd.read_csv(loc_api, sep="\t")
 
 # load dict_synonymns of case/punctuation variants
 # mostly lexical variants from lower().strip and then re.sub('\.','')
-with open('data/dict_synonymns.pkl', 'rb') as f:
-    dict_synonymns = pickle.load(f)
+dict_synonymns = pickle.load(open('data/dict_synonymns.pkl', "rb"))
 dict_synonymns['us']
+
 
 # save the lexical variants into a column in df_api (list of lexical variants)
 df_api['lexical_variants'] = (df_api.place_queried.apply(lambda x: dict_synonymns.get(x,'')))
@@ -57,8 +59,9 @@ tmp = df_api_set.merge(df_geonames[col_geonames_desired],
                        on=['asciiname','country code'],
                        how='inner', right_index=True)
 
+
 # window and sort by hierarchy asc and pop desc
-tmp.hierarchy = tmp.hierarchy.astype('int')
+tmp.hierarchy = tmp.hierarchy.apply(force_int_or_null).astype('float') #use float to allow np.nan
 tmp.population = -tmp.population.astype('float')  #reverse populaton rank
 ranks = tmp.groupby('asciiname')[['hierarchy','population']].rank(method='min')
 tmp.population = -tmp.population        #reverse populaton back

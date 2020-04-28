@@ -139,15 +139,15 @@ excluded_places = {'',' ','none','\n', '\\n','europe','planet earth',
                    'primarily over at gab for now: https://gab.ai/overthemoonbat', 'depression',
                    '*rts are not endorsements*','en todas partes','*','🌴', 'überall.', 'benelux',
                    'retweets/likes does not equal','𝐇𝐞𝐚𝐫𝐭 𝐨𝐟 𝐭𝐡𝐞 𝐑𝐞𝐛𝐞𝐥𝐥𝐢𝐨𝐧','¯\_(ツ)_/¯',
-                   'simulation','grounded','happyville','sadness','euphoria','$$$',
+                   'simulation','grounded','happyville','sadness','euphoria','$$$','allthespentfuelpoolsarecracked',
                    "s,dÁyes. unceded tsawout, tsawwassen, stz'uminus, penelakut lands (bc, canada) | cayuse, umatilla, walla walla, nimíipuu lands (oregon)"}
 # ensure lowercase
 excluded_places = [i.lower() for i in excluded_places]
 
 
 ### blacklist to exclude as regex pattern
-blacklist_regex = r'-*[0-9|\.]+[,|-]+[0-9|\.]+$|in a|world|planet|universe|global|instagram|various|earth|internet|retweets|website|somewhere|border|home|^[0-9.]+$|^ÜT:|🌎|🌍|🌏|☁️|🌙|🏡|✈|➡|🏳️|⭕|🌐|👽|heaven|^www.|.com$|^http[s]*:/[/w]+|unknown|reality|¯\_(ツ)_/¯'
-
+blacklist_regex = r'^-{2,}$|-*[0-9|\.]+[,|-]+[0-9|\.]+$|^::[0-9]+|in a|world|planet|universe|global|instagram|various|earth|internet|retweets|website|somewhere|border|home|^[0-9.]+$|^ÜT:|🌎|🌍|🌏|☁️|🌙|🏡|✈|➡|🏳️|⭕|🌐|👽|heaven|^www.|.com$|^http[s]*:/[/w]+|unknown|reality|¯\_(ツ)_/¯'
+blacklist_regex_api = r'^-{2,}$|^\+[0-9]{2,}$|allthespentfuelpoolsarecracked|一带一路'
 
 ### remap problematic names to known ones
 remap_dict = {
