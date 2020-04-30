@@ -3,6 +3,8 @@
 import pandas as pd
 from api.ascendAPI import ascendClient
 from utils.utils import *
+from text_preprocess.utils_preprocess import *
+
 
 A = ascendClient()
 A.login()
@@ -38,6 +40,10 @@ df_hashtags_xtab = df_hashtags_xtab[top_hashtags]
 df_symptoms = pd.read_csv('data/tweet_results/symptom_counts_x_day.csv',sep=",")
 df_symptoms.rename(columns={'symptom_text':'symptom',
                              'Frequency':'tweet_volume'},inplace=True)
+df_symptoms = (df_symptoms
+    .sort_values(['date','symptom','tweet_volume'],ascending=[True,True,False])
+    .drop_duplicates(['date','symptom'], keep='first')
+    )
 df_symptoms_xtab = df_symptoms.pivot(index='date',columns='symptom', values='tweet_volume')
 top_symptoms = df_symptoms_xtab.max().sort_values(ascending=False)[0:125].index
 top_symptoms = [i for i in top_symptoms if re.search(r'[a-z]+',i)]
@@ -63,10 +69,26 @@ df_daily_mobility_tweet_vol = A.component2pd('yenlow_gmail_com','test','daily_mo
 df_daily_mobility_tweet_vol.set_index('date',inplace=True,drop=True)
 #df_combined = df_daily_mobility_tweet_vol.join(df_sentiments,how='outer')
 df_combined = pd.concat([df_cases, df_daily_mobility_tweet_vol,
-                         df_sentiments,
-                         df_emojis_xtab, df_hashtags_xtab,
-                         df_symptoms_xtab, df_dailies_xtab],
+                         df_sentiments],
                         join='outer',axis=1)
 
-
 df_combined.to_json('data/global_daily_data.json', orient='table')
+df_emojis_xtab.to_json('data/global_daily_emojis.json', orient='table')
+df_hashtags_xtab.to_json('data/global_daily_hashtags.json', orient='table')
+df_symptoms_xtab.to_json('data/global_daily_symptoms.json', orient='table')
+df_dailies_xtab.to_json('data/global_daily_terms.json', orient='table')
+
+
+# Generate wordcloud
+dict_symptoms_freq = df_symptoms_xtab.max().sort_values(ascending=False).to_dict()
+dict_hashtags_freq = df_hashtags_xtab.max().sort_values(ascending=False).to_dict()
+dict_dailies_freq = df_dailies_xtab.max().sort_values(ascending=False).to_dict()
+dict_emojis_freq = df_emojis_xtab.max().sort_values(ascending=False).to_dict()
+# emoji_list = [(' '+k.encode('utf-8'))*int(v) for k,v in dict_emojis_freq.items()]
+# emoji_text = '\n'.join(emoji_list)
+
+
+wordcloud_fig(dict_symptoms_freq,100,'output/wc_symptoms.png')
+wordcloud_fig(dict_hashtags_freq,100,'output/wc_hashtags.png')
+wordcloud_fig(dict_dailies_freq,100,'output/wc_terms.png')
+wordcloud_fig(dict_emojis_freq,100,None)

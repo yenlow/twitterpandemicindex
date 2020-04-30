@@ -2,6 +2,8 @@ import re, json
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.stem.porter import PorterStemmer
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 try:
     stopwords_Eng = stopwords.words('english')
@@ -109,3 +111,17 @@ def preprocessor(s):
     s = normalize_terms(s)
     return s
 
+def wordcloud_fig(text,max_words=100,outfig=None):
+    if isinstance(text,dict):
+        wc = WordCloud(width=800, height=800, max_words=max_words,
+                  background_color='white',
+                  min_font_size=10).generate_from_frequencies(text)
+    elif isinstance(text,str):
+        wc = WordCloud(width=800, height=800, max_words=max_words,
+                  background_color='white',
+                  min_font_size=10).generate(text)
+    plt.imshow(wc, interpolation='bilinear')
+    plt.axis("off")
+    plt.show()
+    if outfig:
+        plt.savefig(outfig)
