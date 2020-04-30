@@ -52,11 +52,18 @@ df_dailies_xtab = df_dailies_xtab[top_terms]
 #df_dailies_xtab.reset_index().to_csv('/Users/yensia-low/Dropbox/transfer/dailies.tsv', sep="\t", index=False)
 
 
+# 5. Read JHU cases table joined in ascend
+df_cases = A.component2pd('yenlow_gmail_com','test','global_cases_deaths_recov')
+df_cases.set_index('date',inplace=True,drop=True)
+df_cases.rename(columns={'deaths':'death_cnt'},inplace=True)
+
+
 # 5. Read global google mobility data from ascend
 df_daily_mobility_tweet_vol = A.component2pd('yenlow_gmail_com','test','daily_mobility_global_tweet_vol')
 df_daily_mobility_tweet_vol.set_index('date',inplace=True,drop=True)
 #df_combined = df_daily_mobility_tweet_vol.join(df_sentiments,how='outer')
-df_combined = pd.concat([df_daily_mobility_tweet_vol, df_sentiments,
+df_combined = pd.concat([df_cases, df_daily_mobility_tweet_vol,
+                         df_sentiments,
                          df_emojis_xtab, df_hashtags_xtab,
                          df_symptoms_xtab, df_dailies_xtab],
                         join='outer',axis=1)

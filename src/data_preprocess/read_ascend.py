@@ -3,6 +3,7 @@ from utils.utils import *
 import pandas as pd
 
 pd.set_option('display.max_columns', 100)
+pd.set_option('display.max_rows', 300)
 pd.set_option('display.max_colwidth', 50)
 pd.set_option('display.width', 2000)
 

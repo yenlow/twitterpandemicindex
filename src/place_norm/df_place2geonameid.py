@@ -28,7 +28,7 @@ df_mapped = pd.read_csv(loc_mappings, sep="\t")
 
 # load dict_synonymns of case/punctuation variants
 # mostly lexical variants from lower().strip and then re.sub('\.','')
-dict_synonymns = pickle.load(open('data/dict_synonymns.pkl', "rb"))
+dict_synonymns = pickle.load(open('../../data/place_norm/dict_synonymns.pkl', "rb"))
 dict_synonymns['us']
 
 # save the lexical variants into a column in df_mapped (list of lexical variants)

@@ -439,3 +439,6 @@ us_state_abbrev = {
 
 # thank you to @kinghelix and @trevormarburger for this idea
 abbrev_us_state = dict(map(reversed, us_state_abbrev.items()))
+
+#df_geonames.to_pickle('data/df_geonames.zip',compression='zip')
+#df_geonames = pd.read_pickle('data/df_geonames.zip')

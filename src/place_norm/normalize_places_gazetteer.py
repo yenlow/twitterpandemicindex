@@ -78,7 +78,7 @@ len(dict_synonymns)  #924849
 len(discarded_places) #75647 (7%)
 
 # save dict_synonymns
-with open('data/dict_synonymns.pkl', 'wb') as f:
+with open('../../data/place_norm/dict_synonymns.pkl', 'wb') as f:
     pickle.dump(dict_synonymns, f)
 f.close()
 
