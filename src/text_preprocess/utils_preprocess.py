@@ -122,6 +122,6 @@ def wordcloud_fig(text,max_words=100,outfig=None):
                   min_font_size=10).generate(text)
     plt.imshow(wc, interpolation='bilinear')
     plt.axis("off")
-    plt.show()
+#    plt.show()
     if outfig:
         plt.savefig(outfig)
