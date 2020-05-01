@@ -25,4 +25,5 @@ data/*.parquet
 !data/data_for_mockup.json
 text_preprocess/tweetstream_txt.py
 output/*
-!output/20200421_191436/
+!output/20200421_191436
+!output/*.png
