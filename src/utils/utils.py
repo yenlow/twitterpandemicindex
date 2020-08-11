@@ -19,23 +19,40 @@ def csv2other(file, format='json', skiprows=None):
     return df
 
 
-def open_file(file,indiv_file=None):
+def open_file(path, indiv_file=None, codec='utf-8') -> str:
+    '''
+    Reads single text file (also within zip archive) into text blob from local path or url
+    Args:
+        path (str): path of text or zip file
+        indiv_file (str): reads specific file within zip archive (defaults to None)
+        codec (str): encoding of string (defaults to 'utf-8'). Set to None for no encoding
+
+    Returns: text (str)
+    Example:
+        >>>url = 'https://www.cms.gov/Medicare/Coding/ICD9ProviderDiagnosticCodes/Downloads/ICD-9-CM-v32-master-descriptions.zip'
+        >>>text = open_file(url, indiv_file='CMS32_DESC_LONG_DX.txt', codec=None)
+
+    '''
     # if url
-    if re.match(r'^http|^www.',file):
+    if re.match(r'^http|^www.',path):
         # if zip
-        if re.search('\.zip$',file):
-            resp = urlopen(file)
+        if re.search('\.zip$',path):
+            resp = urlopen(path)
             zipfile = ZipFile(BytesIO(resp.read()))
             if not indiv_file:
-                indiv_file = re.search('/((\w|\s)*)\.zip$',file).group(1) + '.txt'
-            text = zipfile.open(indiv_file).read().decode('utf-8')
+                indiv_file = re.search('/((\w|\s)*)\.zip$',path).group(1) + '.txt'
+            text = zipfile.open(indiv_file,'r').read()
             print(f"Reading {indiv_file}...")
         else:
-            text = urlopen(file).read().decode('utf-8')
+            text = urlopen(path).read()
     # if local
     else:
-        f = open(file, "r")
-        text = f.read().decode('utf-8')
+        f = open(path, "r")
+        text = f.read()
+
+    if codec:
+        text = text.decode(codec)
+
     return text
 
 
